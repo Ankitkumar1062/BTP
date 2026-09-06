@@ -1,3 +1,4 @@
 PROJECT_CONTEXT_AND_PROGRESS.md
+*.exe
 __pycache__/
 *.pyc

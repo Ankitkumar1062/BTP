@@ -1,0 +1,24 @@
+digraph Workcraft_SCENCO_TM {
+  graph [name="CPOG_Tsetlin_Machine", variables="s1,s0"];
+  node [shape=box, style="filled,rounded", fontname="Helvetica"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  "in_x1" [label="Input Port x1", condition="1"];
+  "in_not_x1" [label="Input Port ~x1", condition="1"];
+  "in_x2" [label="Input Port x2", condition="1"];
+  "in_not_x2" [label="Input Port ~x2", condition="1"];
+  "lit_mux1" [label="Literal MUX 1", condition="1"];
+  "lit_mux2" [label="Literal MUX 2", condition="1"];
+  "and_core" [label="Shared 2-input AND Core", condition="1"];
+  "acc_core" [label="Reconfigurable Accumulator (+/-)", condition="1"];
+  "decision_cmp" [label="Threshold Comparator (>= 0)", condition="1"];
+
+  "in_x1" -> "lit_mux1" [condition="~s0", sop="~s1.~s0 + s1.~s0"];
+  "in_not_x1" -> "lit_mux1" [condition="s0", sop="~s1.s0 + s1.s0"];
+  "in_x2" -> "lit_mux2" [condition="s1 ^ s0", sop="~s1.s0 + s1.~s0"];
+  "in_not_x2" -> "lit_mux2" [condition="~(s1 ^ s0)", sop="~s1.~s0 + s1.s0"];
+  "lit_mux1" -> "and_core" [condition="1", sop="1"];
+  "lit_mux2" -> "and_core" [condition="1", sop="1"];
+  "and_core" -> "acc_core" [condition="1", sop="1"];
+  "acc_core" -> "decision_cmp" [condition="1", sop="1"];
+}

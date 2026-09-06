@@ -1,0 +1,106 @@
+{
+  "model_type": "Conditional Partial Order Graph (CPOG)",
+  "encoding_engine": "Workcraft SCENCO SAT-based Optimal Encoder",
+  "control_variables": [
+    "s1",
+    "s0"
+  ],
+  "num_scenarios": 4,
+  "scenarios": [
+    {
+      "code": [
+        0,
+        0
+      ],
+      "code_str": "00",
+      "clause_name": "C1_pos",
+      "formula": "x1 & ~x2",
+      "polarity": 1
+    },
+    {
+      "code": [
+        0,
+        1
+      ],
+      "code_str": "01",
+      "clause_name": "C2_pos",
+      "formula": "~x1 & x2",
+      "polarity": 1
+    },
+    {
+      "code": [
+        1,
+        0
+      ],
+      "code_str": "10",
+      "clause_name": "C1_neg",
+      "formula": "x1 & x2",
+      "polarity": -1
+    },
+    {
+      "code": [
+        1,
+        1
+      ],
+      "code_str": "11",
+      "clause_name": "C2_neg",
+      "formula": "~x1 & ~x2",
+      "polarity": -1
+    }
+  ],
+  "synthesized_conditions": {
+    "vertex_conditions": {
+      "in_x1": "1",
+      "in_not_x1": "1",
+      "in_x2": "1",
+      "in_not_x2": "1",
+      "lit_mux1": "1",
+      "lit_mux2": "1",
+      "and_core": "1",
+      "acc_core": "1",
+      "decision_cmp": "1"
+    },
+    "edge_conditions": [
+      {
+        "arc": "in_x1 -> lit_mux1",
+        "boolean_condition": "~s0",
+        "sum_of_products": "~s1.~s0 + s1.~s0"
+      },
+      {
+        "arc": "in_not_x1 -> lit_mux1",
+        "boolean_condition": "s0",
+        "sum_of_products": "~s1.s0 + s1.s0"
+      },
+      {
+        "arc": "in_x2 -> lit_mux2",
+        "boolean_condition": "s1 ^ s0",
+        "sum_of_products": "~s1.s0 + s1.~s0"
+      },
+      {
+        "arc": "in_not_x2 -> lit_mux2",
+        "boolean_condition": "~(s1 ^ s0)",
+        "sum_of_products": "~s1.~s0 + s1.s0"
+      },
+      {
+        "arc": "lit_mux1 -> and_core",
+        "boolean_condition": "1",
+        "sum_of_products": "1"
+      },
+      {
+        "arc": "lit_mux2 -> and_core",
+        "boolean_condition": "1",
+        "sum_of_products": "1"
+      },
+      {
+        "arc": "and_core -> acc_core",
+        "boolean_condition": "1",
+        "sum_of_products": "1"
+      },
+      {
+        "arc": "acc_core -> decision_cmp",
+        "boolean_condition": "1",
+        "sum_of_products": "1"
+      }
+    ]
+  }
+}
