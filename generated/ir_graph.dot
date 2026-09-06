@@ -1,0 +1,86 @@
+digraph MLIR_Tsetlin_Machine_Dataflow {
+  rankdir=TB;
+  splines=ortho;
+  nodesep=0.6;
+  ranksep=0.8;
+  bgcolor="#FFFFFF";
+  fontname="Helvetica,Arial,sans-serif";
+  node [fontname="Helvetica,Arial,sans-serif", shape=box, style="filled,rounded", penwidth=2, margin="0.2,0.1"];
+  edge [fontname="Helvetica,Arial,sans-serif", fontsize=10, color="#455A64", penwidth=1.5];
+
+  // Title
+  labelloc="t";
+  label="MLIR SSA IR Dataflow Graph for Tsetlin Machine (XOR Benchmark)\n";
+  fontsize=16;
+
+  subgraph cluster_inputs {
+    label="Primary Inputs";
+    style="filled,rounded";
+    bgcolor="#FAFAFA";
+    color="#B0BEC5";
+    fontsize=12;
+    "x1" [label="Input x1\n(i1)", fillcolor="#E1F5FE", color="#0288D1"];
+    "x2" [label="Input x2\n(i1)", fillcolor="#E1F5FE", color="#0288D1"];
+  }
+
+  subgraph cluster_literals {
+    label="Stage 0: Literal Generation (Inverters)";
+    style="filled,rounded";
+    bgcolor="#ECEFF1";
+    color="#90A4AE";
+    fontsize=12;
+    "not_x1" [label="NOT Gate\n~x1 (xori %x1, 1)", fillcolor="#E0F2F1", color="#00796B"];
+    "not_x2" [label="NOT Gate\n~x2 (xori %x2, 1)", fillcolor="#E0F2F1", color="#00796B"];
+  }
+
+  subgraph cluster_clauses {
+    label="Stage 1: Clause Conjunction Trees";
+    style="filled,rounded";
+    bgcolor="#F1F8E9";
+    color="#AED581";
+    fontsize=12;
+    "c1_pos" [label="Clause C1_pos\n[Pos (+1)]\nAND: x1 & not_x2", fillcolor="#E8F5E9", color="#2E7D32"];
+    "c2_pos" [label="Clause C2_pos\n[Pos (+1)]\nAND: not_x1 & x2", fillcolor="#E8F5E9", color="#2E7D32"];
+    "c1_neg" [label="Clause C1_neg\n[Neg (-1)]\nAND: x1 & x2", fillcolor="#FFEBEE", color="#C62828"];
+    "c2_neg" [label="Clause C2_neg\n[Neg (-1)]\nAND: not_x1 & not_x2", fillcolor="#FFEBEE", color="#C62828"];
+  }
+
+  subgraph cluster_voting {
+    label="Stage 2: Voting & Accumulation Tree";
+    style="filled,rounded";
+    bgcolor="#FFFDE7";
+    color="#FFF59D";
+    fontsize=12;
+    "pos_votes" [label="Positive Vote Adder\n(arith.addi %c1_pos, %c2_pos)\n[+Votes : i32]", fillcolor="#FFF3E0", color="#E65100"];
+    "neg_votes" [label="Negative Vote Adder\n(arith.addi %c1_neg, %c2_neg)\n[-Votes : i32]", fillcolor="#FFF3E0", color="#E65100"];
+  }
+
+  subgraph cluster_decision {
+    label="Stage 3: Threshold Decision & Output";
+    style="filled,rounded";
+    bgcolor="#EDE7F6";
+    color="#D1C4E9";
+    fontsize=12;
+    "diff" [label="Vote Subtractor\n(arith.subi %pos_votes, %neg_votes)\n[%diff : i32]", fillcolor="#F3E5F5", color="#7B1FA2"];
+    "decision" [label="Threshold Comparator\n(arith.cmpi sge, %diff, 0)\n[Output %decision : i1]", fillcolor="#EDE7F6", color="#4A148C"];
+  }
+
+  // SSA Def-Use Edges
+  "x1" -> "not_x1" [label=" %x1 "];
+  "x2" -> "not_x2" [label=" %x2 "];
+  "x1" -> "c1_pos" [label=" %x1 "];
+  "not_x2" -> "c1_pos" [label=" %not_x2 "];
+  "not_x1" -> "c2_pos" [label=" %not_x1 "];
+  "x2" -> "c2_pos" [label=" %x2 "];
+  "x1" -> "c1_neg" [label=" %x1 "];
+  "x2" -> "c1_neg" [label=" %x2 "];
+  "not_x1" -> "c2_neg" [label=" %not_x1 "];
+  "not_x2" -> "c2_neg" [label=" %not_x2 "];
+  "c1_pos" -> "pos_votes" [label=" %c1_pos_ext "];
+  "c2_pos" -> "pos_votes" [label=" %c2_pos_ext "];
+  "c1_neg" -> "neg_votes" [label=" %c1_neg_ext "];
+  "c2_neg" -> "neg_votes" [label=" %c2_neg_ext "];
+  "pos_votes" -> "diff" [label=" %pos_votes "];
+  "neg_votes" -> "diff" [label=" %neg_votes "];
+  "diff" -> "decision" [label=" %diff >= 0 "];
+}

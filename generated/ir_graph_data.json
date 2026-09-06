@@ -1,0 +1,192 @@
+{
+  "benchmark_name": "xor",
+  "nodes": [
+    {
+      "id": "x1",
+      "label": "Input x1\\n(i1)",
+      "stage": "inputs",
+      "type": "input",
+      "fillcolor": "#E1F5FE",
+      "color": "#0288D1"
+    },
+    {
+      "id": "x2",
+      "label": "Input x2\\n(i1)",
+      "stage": "inputs",
+      "type": "input",
+      "fillcolor": "#E1F5FE",
+      "color": "#0288D1"
+    },
+    {
+      "id": "not_x1",
+      "label": "NOT Gate\\n~x1 (xori %x1, 1)",
+      "stage": "literals",
+      "type": "inverter",
+      "fillcolor": "#E0F2F1",
+      "color": "#00796B"
+    },
+    {
+      "id": "not_x2",
+      "label": "NOT Gate\\n~x2 (xori %x2, 1)",
+      "stage": "literals",
+      "type": "inverter",
+      "fillcolor": "#E0F2F1",
+      "color": "#00796B"
+    },
+    {
+      "id": "c1_pos",
+      "label": "Clause C1_pos\\n[Pos (+1)]\\nAND: x1 & not_x2",
+      "stage": "clauses",
+      "type": "clause_and",
+      "polarity": 1,
+      "fillcolor": "#E8F5E9",
+      "color": "#2E7D32"
+    },
+    {
+      "id": "c2_pos",
+      "label": "Clause C2_pos\\n[Pos (+1)]\\nAND: not_x1 & x2",
+      "stage": "clauses",
+      "type": "clause_and",
+      "polarity": 1,
+      "fillcolor": "#E8F5E9",
+      "color": "#2E7D32"
+    },
+    {
+      "id": "c1_neg",
+      "label": "Clause C1_neg\\n[Neg (-1)]\\nAND: x1 & x2",
+      "stage": "clauses",
+      "type": "clause_and",
+      "polarity": -1,
+      "fillcolor": "#FFEBEE",
+      "color": "#C62828"
+    },
+    {
+      "id": "c2_neg",
+      "label": "Clause C2_neg\\n[Neg (-1)]\\nAND: not_x1 & not_x2",
+      "stage": "clauses",
+      "type": "clause_and",
+      "polarity": -1,
+      "fillcolor": "#FFEBEE",
+      "color": "#C62828"
+    },
+    {
+      "id": "pos_votes",
+      "label": "Positive Vote Adder\\n(arith.addi %c1_pos, %c2_pos)\\n[+Votes : i32]",
+      "stage": "voting",
+      "type": "adder",
+      "fillcolor": "#FFF3E0",
+      "color": "#E65100"
+    },
+    {
+      "id": "neg_votes",
+      "label": "Negative Vote Adder\\n(arith.addi %c1_neg, %c2_neg)\\n[-Votes : i32]",
+      "stage": "voting",
+      "type": "adder",
+      "fillcolor": "#FFF3E0",
+      "color": "#E65100"
+    },
+    {
+      "id": "diff",
+      "label": "Vote Subtractor\\n(arith.subi %pos_votes, %neg_votes)\\n[%diff : i32]",
+      "stage": "decision",
+      "type": "subtractor",
+      "fillcolor": "#F3E5F5",
+      "color": "#7B1FA2"
+    },
+    {
+      "id": "decision",
+      "label": "Threshold Comparator\\n(arith.cmpi sge, %diff, 0)\\n[Output %decision : i1]",
+      "stage": "decision",
+      "type": "comparator",
+      "fillcolor": "#EDE7F6",
+      "color": "#4A148C"
+    }
+  ],
+  "edges": [
+    {
+      "from": "x1",
+      "to": "not_x1",
+      "label": "%x1"
+    },
+    {
+      "from": "x2",
+      "to": "not_x2",
+      "label": "%x2"
+    },
+    {
+      "from": "x1",
+      "to": "c1_pos",
+      "label": "%x1"
+    },
+    {
+      "from": "not_x2",
+      "to": "c1_pos",
+      "label": "%not_x2"
+    },
+    {
+      "from": "not_x1",
+      "to": "c2_pos",
+      "label": "%not_x1"
+    },
+    {
+      "from": "x2",
+      "to": "c2_pos",
+      "label": "%x2"
+    },
+    {
+      "from": "x1",
+      "to": "c1_neg",
+      "label": "%x1"
+    },
+    {
+      "from": "x2",
+      "to": "c1_neg",
+      "label": "%x2"
+    },
+    {
+      "from": "not_x1",
+      "to": "c2_neg",
+      "label": "%not_x1"
+    },
+    {
+      "from": "not_x2",
+      "to": "c2_neg",
+      "label": "%not_x2"
+    },
+    {
+      "from": "c1_pos",
+      "to": "pos_votes",
+      "label": "%c1_pos_ext"
+    },
+    {
+      "from": "c2_pos",
+      "to": "pos_votes",
+      "label": "%c2_pos_ext"
+    },
+    {
+      "from": "c1_neg",
+      "to": "neg_votes",
+      "label": "%c1_neg_ext"
+    },
+    {
+      "from": "c2_neg",
+      "to": "neg_votes",
+      "label": "%c2_neg_ext"
+    },
+    {
+      "from": "pos_votes",
+      "to": "diff",
+      "label": "%pos_votes"
+    },
+    {
+      "from": "neg_votes",
+      "to": "diff",
+      "label": "%neg_votes"
+    },
+    {
+      "from": "diff",
+      "to": "decision",
+      "label": "%diff >= 0"
+    }
+  ]
+}

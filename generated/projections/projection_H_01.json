@@ -1,0 +1,49 @@
+{
+  "scenario": {
+    "code": [
+      0,
+      1
+    ],
+    "code_str": "01",
+    "clause_name": "C2_pos",
+    "formula": "~x1 & x2",
+    "polarity": 1
+  },
+  "active_vertices": [
+    "in_x1",
+    "in_not_x1",
+    "in_x2",
+    "in_not_x2",
+    "lit_mux1",
+    "lit_mux2",
+    "and_core",
+    "acc_core",
+    "decision_cmp"
+  ],
+  "active_edges": [
+    {
+      "from": "in_not_x1",
+      "to": "lit_mux1"
+    },
+    {
+      "from": "in_x2",
+      "to": "lit_mux2"
+    },
+    {
+      "from": "lit_mux1",
+      "to": "and_core"
+    },
+    {
+      "from": "lit_mux2",
+      "to": "and_core"
+    },
+    {
+      "from": "and_core",
+      "to": "acc_core"
+    },
+    {
+      "from": "acc_core",
+      "to": "decision_cmp"
+    }
+  ]
+}

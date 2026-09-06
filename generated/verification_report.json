@@ -1,0 +1,139 @@
+{
+  "benchmark_name": "xor",
+  "verification_status": "VERIFIED_SUCCESSFUL",
+  "proof_1_structural_isomorphism": {
+    "proof_name": "Structural Isomorphism of Scenario Projections (H|S ~= G_IR,clause)",
+    "all_projections_isomorphic": true,
+    "scenarios_checked": 4,
+    "details": [
+      {
+        "scenario_code": "00",
+        "clause_name": "C1_pos",
+        "mlir_formula": "x1 & not_x2",
+        "mlir_expected_literals": [
+          "x1",
+          "not_x2"
+        ],
+        "cpog_projected_literals": [
+          "x1",
+          "not_x2"
+        ],
+        "has_and_core": true,
+        "has_acc_core": true,
+        "literals_match": true,
+        "isomorphism_proven": true
+      },
+      {
+        "scenario_code": "01",
+        "clause_name": "C2_pos",
+        "mlir_formula": "not_x1 & x2",
+        "mlir_expected_literals": [
+          "not_x1",
+          "x2"
+        ],
+        "cpog_projected_literals": [
+          "not_x1",
+          "x2"
+        ],
+        "has_and_core": true,
+        "has_acc_core": true,
+        "literals_match": true,
+        "isomorphism_proven": true
+      },
+      {
+        "scenario_code": "10",
+        "clause_name": "C1_neg",
+        "mlir_formula": "x1 & x2",
+        "mlir_expected_literals": [
+          "x1",
+          "x2"
+        ],
+        "cpog_projected_literals": [
+          "x1",
+          "x2"
+        ],
+        "has_and_core": true,
+        "has_acc_core": true,
+        "literals_match": true,
+        "isomorphism_proven": true
+      },
+      {
+        "scenario_code": "11",
+        "clause_name": "C2_neg",
+        "mlir_formula": "not_x1 & not_x2",
+        "mlir_expected_literals": [
+          "not_x1",
+          "not_x2"
+        ],
+        "cpog_projected_literals": [
+          "not_x1",
+          "not_x2"
+        ],
+        "has_and_core": true,
+        "has_acc_core": true,
+        "literals_match": true,
+        "isomorphism_proven": true
+      }
+    ]
+  },
+  "proof_2_behavioral_truth_table": {
+    "proof_name": "Exhaustive End-to-End Behavioral Truth-Table Equivalence",
+    "all_models_equivalent": true,
+    "total_vectors_tested": 4,
+    "accuracy": 100.0,
+    "eval_records": [
+      {
+        "input": [
+          0,
+          0
+        ],
+        "expected_ground_truth": 0,
+        "tm_python_pred": 0,
+        "mlir_ssa_pred": 0,
+        "cpog_hardware_pred": 0,
+        "status": "PASSED",
+        "cpog_accumulated_sum": -1,
+        "mlir_vote_diff": -1
+      },
+      {
+        "input": [
+          0,
+          1
+        ],
+        "expected_ground_truth": 1,
+        "tm_python_pred": 1,
+        "mlir_ssa_pred": 1,
+        "cpog_hardware_pred": 1,
+        "status": "PASSED",
+        "cpog_accumulated_sum": 1,
+        "mlir_vote_diff": 1
+      },
+      {
+        "input": [
+          1,
+          0
+        ],
+        "expected_ground_truth": 1,
+        "tm_python_pred": 1,
+        "mlir_ssa_pred": 1,
+        "cpog_hardware_pred": 1,
+        "status": "PASSED",
+        "cpog_accumulated_sum": 1,
+        "mlir_vote_diff": 1
+      },
+      {
+        "input": [
+          1,
+          1
+        ],
+        "expected_ground_truth": 0,
+        "tm_python_pred": 0,
+        "mlir_ssa_pred": 0,
+        "cpog_hardware_pred": 0,
+        "status": "PASSED",
+        "cpog_accumulated_sum": -1,
+        "mlir_vote_diff": -1
+      }
+    ]
+  }
+}

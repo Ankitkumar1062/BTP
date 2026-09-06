@@ -1,0 +1,34 @@
+digraph Synthesized_TM_CPOG {
+  rankdir=TB;
+  splines=ortho;
+  nodesep=0.7;
+  ranksep=0.9;
+  bgcolor="#FFFFFF";
+  fontname="Helvetica,Arial,sans-serif";
+  node [fontname="Helvetica,Arial,sans-serif", shape=box, style="filled,rounded", penwidth=2, margin="0.2,0.1"];
+  edge [fontname="Helvetica,Arial,sans-serif", fontsize=11, penwidth=1.8];
+
+  labelloc="t";
+  label="Conditional Partial Order Graph (CPOG) H = (V, E, φ, ρ) for Tsetlin Machine (XOR)\n";
+  fontsize=16;
+
+  "in_x1" [label="Input Port x1\n[φ = 1]", fillcolor="#E0F2FE", color="#0284C7"];
+  "in_not_x1" [label="Input Port ~x1\n[φ = 1]", fillcolor="#E0F2FE", color="#0284C7"];
+  "in_x2" [label="Input Port x2\n[φ = 1]", fillcolor="#E0F2FE", color="#0284C7"];
+  "in_not_x2" [label="Input Port ~x2\n[φ = 1]", fillcolor="#E0F2FE", color="#0284C7"];
+  "lit_mux1" [label="Literal MUX 1\n[φ = 1]", fillcolor="#FEF08A", color="#CA8A04"];
+  "lit_mux2" [label="Literal MUX 2\n[φ = 1]", fillcolor="#FEF08A", color="#CA8A04"];
+  "and_core" [label="Shared 2-input AND Core\n[φ = 1]", fillcolor="#DCFCE7", color="#16A34A"];
+  "acc_core" [label="Reconfigurable Accumulator (+/-)\n[φ = 1]", fillcolor="#F3E8FF", color="#9333EA"];
+  "decision_cmp" [label="Threshold Comparator (>= 0)\n[φ = 1]", fillcolor="#EDE9FE", color="#6D28D9"];
+
+  // Conditional Interconnect Arcs (ρ)
+  "in_x1" -> "lit_mux1" [label="  ρ = ~s0  ", color="#0284C7"];
+  "in_not_x1" -> "lit_mux1" [label="  ρ = s0  ", color="#0284C7"];
+  "in_x2" -> "lit_mux2" [label="  ρ = s1 ^ s0  ", color="#0284C7"];
+  "in_not_x2" -> "lit_mux2" [label="  ρ = ~(s1 ^ s0)  ", color="#0284C7"];
+  "lit_mux1" -> "and_core" [label="  ρ = 1  ", color="#475569"];
+  "lit_mux2" -> "and_core" [label="  ρ = 1  ", color="#475569"];
+  "and_core" -> "acc_core" [label="  ρ = 1  ", color="#475569"];
+  "acc_core" -> "decision_cmp" [label="  ρ = 1  ", color="#475569"];
+}

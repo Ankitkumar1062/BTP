@@ -1,0 +1,80 @@
+{
+  "canonical": {
+    "benchmark": "2-input XOR (4 Clauses, 4 Literals)",
+    "spatial_baseline": {
+      "and2_gates": 4,
+      "inverters": 2,
+      "mux2_units": 0,
+      "adder_fa_cells": 8,
+      "interconnect_wires": 8,
+      "total_gate_equivalents_GE": 63.5
+    },
+    "cpog_shared": {
+      "and2_gates": 1,
+      "inverters": 2,
+      "mux2_units": 2,
+      "control_logic_xor2": 1,
+      "accumulator_fa_cells": 4,
+      "accumulator_dff_cells": 4,
+      "interconnect_wires": 4,
+      "total_gate_equivalents_GE": 56.0
+    },
+    "savings": {
+      "clause_and_gate_reduction_pct": 75.0,
+      "interconnect_wire_reduction_pct": 50.0,
+      "hardware_reuse_factor": 4.0
+    }
+  },
+  "scaling": [
+    {
+      "num_clauses": 4,
+      "num_inputs": 2,
+      "cpog_shared_cores": 1,
+      "spatial_total_GE": 230.5,
+      "cpog_total_GE": 102.8,
+      "gate_reduction_pct": 75.0,
+      "area_reduction_pct": 55.4,
+      "wire_reduction_pct": 75.0
+    },
+    {
+      "num_clauses": 16,
+      "num_inputs": 8,
+      "cpog_shared_cores": 2,
+      "spatial_total_GE": 922.0,
+      "cpog_total_GE": 208.5,
+      "gate_reduction_pct": 87.5,
+      "area_reduction_pct": 77.4,
+      "wire_reduction_pct": 87.5
+    },
+    {
+      "num_clauses": 64,
+      "num_inputs": 16,
+      "cpog_shared_cores": 4,
+      "spatial_total_GE": 3676.0,
+      "cpog_total_GE": 417.0,
+      "gate_reduction_pct": 93.8,
+      "area_reduction_pct": 88.7,
+      "wire_reduction_pct": 93.8
+    },
+    {
+      "num_clauses": 240,
+      "num_inputs": 32,
+      "cpog_shared_cores": 8,
+      "spatial_total_GE": 13764.0,
+      "cpog_total_GE": 834.0,
+      "gate_reduction_pct": 96.7,
+      "area_reduction_pct": 93.9,
+      "wire_reduction_pct": 96.7
+    },
+    {
+      "num_clauses": 480,
+      "num_inputs": 64,
+      "cpog_shared_cores": 16,
+      "spatial_total_GE": 27528.0,
+      "cpog_total_GE": 1668.0,
+      "gate_reduction_pct": 96.7,
+      "area_reduction_pct": 93.9,
+      "wire_reduction_pct": 96.7
+    }
+  ]
+}
