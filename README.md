@@ -29,4 +29,4 @@ python run_full_pipeline.py
 ##  Key Results
 
 - **Formal Verification**: 100% truth-table accuracy across Python TM, MLIR SSA software simulation, and CPOG hardware execution. All 4 scenario projections are mathematically isomorphic.
-- **Hardware Reuse**: Reduces clause AND gates by **75.0%**, reduces adder cells by **50.0%**, and cuts interconnect wiring by **50.0%** for the canonical benchmark (scaling to **>93% area reduction** for 480-clause TMs).
+- **Hardware Reuse**: Reduces clause AND gates by **75.0%**, reduces adder cells by **50.0%**, and cuts interconnect wiring by **50.0%** for the canonical benchmark.
