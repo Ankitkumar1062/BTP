@@ -255,75 +255,121 @@ class CPOGSynthesizer:
         """
         Renders a publication-quality standalone SVG diagram for the synthesized CPOG datapath.
         """
-        width = 960
-        height = 700
+        width = 1180
+        height = 920
         svg = []
+        svg.append('<?xml version="1.0" encoding="UTF-8"?>')
         svg.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="100%" height="100%">')
         svg.append('<defs>')
-        svg.append('  <marker id="cpog_arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">')
-        svg.append('    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1E293B"/>')
-        svg.append('  </marker>')
-        svg.append('  <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">')
-        svg.append('    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>')
+        
+        # Arrow Markers
+        markers = [
+            ("cpog-blue", "#0284C7"),
+            ("cpog-slate", "#475569"),
+            ("cpog-green", "#16A34A"),
+            ("cpog-purple", "#7C3AED")
+        ]
+        for mid, mcol in markers:
+            svg.append(f'  <marker id="{mid}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">')
+            svg.append(f'    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="{mcol}"/>')
+            svg.append('  </marker>')
+            
+        svg.append('  <filter id="card-shadow" x="-10%" y="-10%" width="125%" height="125%">')
+        svg.append('    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>')
+        svg.append('    <feOffset dx="0" dy="2" result="offsetblur"/>')
+        svg.append('    <feFlood flood-color="#0F172A" flood-opacity="0.08"/>')
+        svg.append('    <feComposite in2="offsetblur" operator="in"/>')
+        svg.append('    <feMerge>')
+        svg.append('      <feMergeNode/>')
+        svg.append('      <feMergeNode in="SourceGraphic"/>')
+        svg.append('    </feMerge>')
         svg.append('  </filter>')
         svg.append('</defs>')
 
         # Background
-        svg.append(f'<rect width="{width}" height="{height}" fill="#F8FAFC" rx="12"/>')
-        svg.append(f'<text x="{width/2}" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#0F172A" text-anchor="middle">Synthesized CPOG Reconfigurable Datapath H = (V, E, φ, ρ)</text>')
-        svg.append(f'<text x="{width/2}" y="58" font-family="Arial, sans-serif" font-size="12" fill="#64748B" text-anchor="middle">Unifies 4 Clause Scenarios into 1 Shared Execution Unit with Minimal Boolean Switching Logic</text>')
+        svg.append(f'<rect width="{width}" height="{height}" fill="#F8FAFC" rx="16"/>')
+        
+        # Header Card
+        svg.append('<rect x="30" y="20" width="1120" height="75" rx="12" fill="#0F172A"/>')
+        svg.append('<text x="590" y="50" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="20" font-weight="700" fill="#F8FAFC" text-anchor="middle">Synthesized CPOG Reconfigurable Datapath H = (V, E, &#966;, &#961;)</text>')
+        svg.append('<text x="590" y="74" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">Unified Reconfigurable Architecture: 4 Clause Scenarios Folded onto 1 Shared Execution Core</text>')
 
         # Position layout
         pos = {
-            "in_x1": (160, 110), "in_not_x1": (320, 110),
-            "in_x2": (640, 110), "in_not_x2": (800, 110),
-            "lit_mux1": (240, 240), "lit_mux2": (720, 240),
-            "and_core": (480, 360),
-            "acc_core": (480, 480),
-            "decision_cmp": (480, 600)
+            "in_x1": (200, 160), "in_not_x1": (400, 160),
+            "in_x2": (780, 160), "in_not_x2": (980, 160),
+            "lit_mux1": (300, 310), "lit_mux2": (880, 310),
+            "and_core": (590, 460),
+            "acc_core": (590, 610),
+            "decision_cmp": (590, 760)
         }
 
-        # Draw Conditional Edges
+        # Draw Conditional Edges (Arcs)
         edges_svg = [
-            ("in_x1", "lit_mux1", "ρ = ~s0", "#0284C7", 170, 175),
-            ("in_not_x1", "lit_mux1", "ρ = s0", "#0284C7", 310, 175),
-            ("in_x2", "lit_mux2", "ρ = s1 ⊕ s0", "#0284C7", 650, 175),
-            ("in_not_x2", "lit_mux2", "ρ = ~(s1 ⊕ s0)", "#0284C7", 790, 175),
-            ("lit_mux1", "and_core", "ρ = 1", "#475569", 340, 310),
-            ("lit_mux2", "and_core", "ρ = 1", "#475569", 620, 310),
-            ("and_core", "acc_core", "ρ = 1 (Weight = +1 / -1)", "#9333EA", 490, 425),
-            ("acc_core", "decision_cmp", "ρ = 1", "#6D28D9", 490, 545)
+            ("in_x1", "lit_mux1", "&#961; = ~s0", "#0284C7", 210, 235),
+            ("in_not_x1", "lit_mux1", "&#961; = s0", "#0284C7", 390, 235),
+            ("in_x2", "lit_mux2", "&#961; = s1 &#8853; s0", "#0284C7", 790, 235),
+            ("in_not_x2", "lit_mux2", "&#961; = ~(s1 &#8853; s0)", "#0284C7", 970, 235),
+            ("lit_mux1", "and_core", "&#961; = 1 (Port 1)", "#475569", 410, 395),
+            ("lit_mux2", "and_core", "&#961; = 1 (Port 2)", "#475569", 770, 395),
+            ("and_core", "acc_core", "&#961; = 1 (Weight: +1 if s1=0, -1 if s1=1)", "#7C3AED", 590, 545),
+            ("acc_core", "decision_cmp", "&#961; = 1 (Signed Total Tally)", "#7C3AED", 590, 695)
         ]
 
         for src, dst, elabel, ecolor, tx, ty in edges_svg:
             sx, sy = pos[src]
             dx, dy = pos[dst]
-            svg.append(f'<path d="M {sx} {sy+25} C {sx} {sy+40}, {dx} {dy-40}, {dx} {dy-25}" fill="none" stroke="{ecolor}" stroke-width="2" marker-end="url(#cpog_arrow)"/>')
-            svg.append(f'<rect x="{tx-45}" y="{ty-10}" width="90" height="20" rx="4" fill="#FFFFFF" stroke="{ecolor}" stroke-width="1"/>')
-            svg.append(f'<text x="{tx}" y="{ty+4}" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="{ecolor}" text-anchor="middle">{elabel}</text>')
+            m_id = "cpog-blue" if ecolor == "#0284C7" else ("cpog-purple" if ecolor == "#7C3AED" else "cpog-slate")
+            svg.append(f'<path d="M {sx} {sy+35} C {sx} {sy+70}, {dx} {dy-70}, {dx} {dy-35}" fill="none" stroke="{ecolor}" stroke-width="2.2" marker-end="url(#{m_id})"/>')
+            
+            # Condition Pill Box
+            pill_w = 110 if len(elabel) < 20 else (260 if len(elabel) > 30 else 140)
+            svg.append(f'<rect x="{tx - pill_w/2}" y="{ty-11}" width="{pill_w}" height="22" rx="6" fill="#FFFFFF" stroke="{ecolor}" stroke-width="1.2"/>')
+            svg.append(f'<text x="{tx}" y="{ty+4}" font-family="Consolas, Monaco, monospace" font-size="10" font-weight="700" fill="{ecolor}" text-anchor="middle">{elabel}</text>')
 
-        # Draw Units
+        # Units / Vertices
         units = [
-            ("in_x1", "Input Port x1", "Literal x1", "#E0F2FE", "#0284C7", 120, 45),
-            ("in_not_x1", "Input Port ~x1", "Literal ~x1", "#E0F2FE", "#0284C7", 120, 45),
-            ("in_x2", "Input Port x2", "Literal x2", "#E0F2FE", "#0284C7", 120, 45),
-            ("in_not_x2", "Input Port ~x2", "Literal ~x2", "#E0F2FE", "#0284C7", 120, 45),
-            ("lit_mux1", "Literal MUX 1", "Select Port 1 [φ=1]", "#FEF08A", "#CA8A04", 150, 50),
-            ("lit_mux2", "Literal MUX 2", "Select Port 2 [φ=1]", "#FEF08A", "#CA8A04", 150, 50),
-            ("and_core", "Shared AND Core", "2-input Bitwise AND [φ=1]", "#DCFCE7", "#16A34A", 200, 55),
-            ("acc_core", "Signed Accumulator", "+1 (s1=0) / -1 (s1=1) [φ=1]", "#F3E8FF", "#9333EA", 220, 55),
-            ("decision_cmp", "Threshold Comparator", "Sign Check (Sum >= 0) [φ=1]", "#EDE9FE", "#6D28D9", 220, 55)
+            ("in_x1", 200, 160, 160, 65, "Input Literal: x1", "Primary Input %x1", "#EFF6FF", "#3B82F6", "#DBEAFE", "#1E40AF"),
+            ("in_not_x1", 400, 160, 160, 65, "Input Literal: ~x1", "Inverted %not_x1", "#F0FDFA", "#14B8A6", "#CCFBF1", "#115E59"),
+            ("in_x2", 780, 160, 160, 65, "Input Literal: x2", "Primary Input %x2", "#EFF6FF", "#3B82F6", "#DBEAFE", "#1E40AF"),
+            ("in_not_x2", 980, 160, 160, 65, "Input Literal: ~x2", "Inverted %not_x2", "#F0FDFA", "#14B8A6", "#CCFBF1", "#115E59"),
+
+            ("lit_mux1", 300, 310, 240, 80, "Literal Selector MUX 1", "Selects x1 or ~x1 [&#966;=1]", "#FFFBEB", "#F59E0B", "#FEF3C7", "#92400E"),
+            ("lit_mux2", 880, 310, 240, 80, "Literal Selector MUX 2", "Selects x2 or ~x2 [&#966;=1]", "#FFFBEB", "#F59E0B", "#FEF3C7", "#92400E"),
+
+            ("and_core", 590, 460, 340, 85, "Shared 2-Input AND Core", "100% Duty Cycle [&#966;=1] (Reused for all 4 Clauses)", "#F0FDF4", "#22C55E", "#DCFCE7", "#166534"),
+            ("acc_core", 590, 610, 340, 85, "Signed Voting Accumulator", "+1 (s1=0) / -1 (s1=1) [&#966;=1]", "#FAF5FF", "#A855F7", "#F3E8FF", "#6B21A8"),
+            ("decision_cmp", 590, 760, 340, 85, "Threshold Decision Comparator", "Sign Check: (vote_sum &gt;= 0) ? 1 : 0", "#F5F3FF", "#8B5CF6", "#EDE9FE", "#5B21B6")
         ]
 
-        for uid, title, sub, ufill, ustroke, uw, uh in units:
-            cx, cy = pos[uid]
-            ux = cx - uw/2
-            uy = cy - uh/2
-            svg.append(f'<g filter="url(#shadow)">')
-            svg.append(f'  <rect x="{ux}" y="{uy}" width="{uw}" height="{uh}" rx="8" fill="{ufill}" stroke="{ustroke}" stroke-width="2"/>')
-            svg.append(f'  <text x="{cx}" y="{cy-5}" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0F172A" text-anchor="middle">{title}</text>')
-            svg.append(f'  <text x="{cx}" y="{cy+13}" font-family="Arial, sans-serif" font-size="10" fill="#475569" text-anchor="middle">{sub}</text>')
+        for uid, cx, cy, cw, ch, title, sub, ufill, ustroke, tfill, tcolor in units:
+            rx_pos = cx - cw/2
+            ry_pos = cy - ch/2
+            
+            svg.append(f'<g filter="url(#card-shadow)">')
+            svg.append(f'  <rect x="{rx_pos}" y="{ry_pos}" width="{cw}" height="{ch}" rx="10" fill="{ufill}" stroke="{ustroke}" stroke-width="2"/>')
+            svg.append(f'  <text x="{cx}" y="{ry_pos+22}" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle">{title}</text>')
+            
+            badge_w = cw - 30
+            badge_h = 22
+            badge_x = cx - badge_w/2
+            badge_y = ry_pos + ch - 28
+            svg.append(f'  <rect x="{badge_x}" y="{badge_y}" width="{badge_w}" height="{badge_h}" rx="5" fill="{tfill}"/>')
+            svg.append(f'  <text x="{cx}" y="{badge_y+15}" font-family="Consolas, Monaco, monospace" font-size="10" font-weight="600" fill="{tcolor}" text-anchor="middle">{sub}</text>')
             svg.append(f'</g>')
+
+        # Footer Legend / Scenario Codebook
+        svg.append('<rect x="30" y="845" width="1120" height="60" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>')
+        svg.append('<text x="50" y="872" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" font-weight="700" fill="#475569">CONTROL CODEBOOK S = (s1, s0):</text>')
+        
+        scenarios_legend = [
+            (280, 872, "00: C1+ (x1 &amp; ~x2) [+1 Vote]"),
+            (500, 872, "01: C2+ (~x1 &amp; x2) [+1 Vote]"),
+            (720, 872, "10: C1- (x1 &amp; x2) [-1 Vote]"),
+            (940, 872, "11: C2- (~x1 &amp; ~x2) [-1 Vote]")
+        ]
+        for sx, sy, stext in scenarios_legend:
+            svg.append(f'<text x="{sx}" y="{sy}" font-family="Consolas, Monaco, monospace" font-size="11" font-weight="600" fill="#0284C7">{stext}</text>')
 
         svg.append('</svg>')
         with open(svg_path, "w", encoding="utf-8") as f:

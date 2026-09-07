@@ -208,92 +208,189 @@ class MLIRGraphExtractor:
         self._generate_custom_svg(svg_path)
 
     def _generate_custom_svg(self, svg_path):
-        width = 1000
-        height = 800
+        width = 1360
+        height = 1320
         svg = []
+        svg.append('<?xml version="1.0" encoding="UTF-8"?>')
         svg.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="100%" height="100%">')
         svg.append('<defs>')
-        svg.append('  <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">')
-        svg.append('    <path d="M 0 0 L 10 5 L 0 10 z" fill="#37474F"/>')
-        svg.append('  </marker>')
-        svg.append('  <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">')
-        svg.append('    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>')
+        
+        # High-Contrast Colored Arrow Markers
+        markers = [
+            ("arrow-slate", "#475569"),
+            ("arrow-blue", "#0284C7"),
+            ("arrow-teal", "#0D9488"),
+            ("arrow-green", "#16A34A"),
+            ("arrow-rose", "#E11D48"),
+            ("arrow-amber", "#D97706"),
+            ("arrow-purple", "#7C3AED")
+        ]
+        for mid, mcol in markers:
+            svg.append(f'  <marker id="{mid}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">')
+            svg.append(f'    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="{mcol}"/>')
+            svg.append('  </marker>')
+            
+        # Clean Subtle Drop Shadow Filter
+        svg.append('  <filter id="card-shadow" x="-8%" y="-8%" width="120%" height="120%">')
+        svg.append('    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>')
+        svg.append('    <feOffset dx="0" dy="2" result="offsetblur"/>')
+        svg.append('    <feFlood flood-color="#0F172A" flood-opacity="0.08"/>')
+        svg.append('    <feComposite in2="offsetblur" operator="in"/>')
+        svg.append('    <feMerge>')
+        svg.append('      <feMergeNode/>')
+        svg.append('      <feMergeNode in="SourceGraphic"/>')
+        svg.append('    </feMerge>')
         svg.append('  </filter>')
         svg.append('</defs>')
         
-        # Background
-        svg.append(f'<rect width="{width}" height="{height}" fill="#F8FAFC" rx="12"/>')
-        svg.append(f'<text x="{width/2}" y="40" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#0F172A" text-anchor="middle">MLIR SSA IR Dataflow Graph (Tsetlin Machine {self.benchmark_name.upper()})</text>')
-        svg.append(f'<text x="{width/2}" y="65" font-family="Arial, sans-serif" font-size="13" fill="#64748B" text-anchor="middle">Static Single Assignment (SSA) Representation with Dialect Operations</text>')
+        # Background Canvas
+        svg.append(f'<rect width="{width}" height="{height}" fill="#F8FAFC" rx="16"/>')
+        
+        # Header Banner
+        svg.append('<rect x="35" y="20" width="1290" height="75" rx="12" fill="#0F172A"/>')
+        svg.append('<text x="680" y="48" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="20" font-weight="700" fill="#F8FAFC" text-anchor="middle">MLIR SSA IR Dataflow Graph (Tsetlin Machine XOR Benchmark)</text>')
+        svg.append('<text x="680" y="72" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">Multi-Level Intermediate Representation (MLIR) Static Single Assignment (SSA) Def-Use Dataflow Graph</text>')
 
-        # Node positions map (Layered)
-        pos = {
-            "x1": (220, 120), "x2": (680, 120),
-            "not_x1": (380, 120), "not_x2": (840, 120),
-            "c1_pos": (180, 260), "c2_pos": (420, 260),
-            "c1_neg": (660, 260), "c2_neg": (900, 260),
-            "pos_votes": (300, 430), "neg_votes": (780, 430),
-            "diff": (540, 560),
-            "decision": (540, 690)
-        }
-
-        # Draw Stage Clusters
-        stage_boxes = [
-            (100, 85, 860, 95, "Stage 0: Primary Inputs & Inverted Literals", "#F1F5F9", "#CBD5E1"),
-            (80, 205, 900, 140, "Stage 1: Clause Conjunction Trees (AND Reductions)", "#F0FDF4", "#BBF7D0"),
-            (180, 370, 700, 130, "Stage 2: Voting & Accumulation Tree (ADD)", "#FEFCE8", "#FEF08A"),
-            (360, 520, 360, 220, "Stage 3: Subtraction & Threshold Decision", "#FAF5FF", "#E9D5FF")
+        # ---------------------------------------------------------------------
+        # Stage Clusters Panels (With 35px+ Header Padding to Prevent Card Overlap)
+        # ---------------------------------------------------------------------
+        stage_clusters = [
+            (35, 110, 1290, 160, "STAGE 0: PRIMARY INPUTS &amp; LITERAL INVERSION (arith.xori)", "#F8FAFC", "#CBD5E1", "#0284C7"),
+            (35, 390, 1290, 180, "STAGE 1: CLAUSE CONJUNCTION TREES (arith.andi)", "#F8FAFC", "#CBD5E1", "#16A34A"),
+            (35, 600, 1290, 180, "STAGE 2: VOTING ACCUMULATION TREES (arith.extui &amp; arith.addi)", "#F8FAFC", "#CBD5E1", "#D97706"),
+            (35, 810, 1290, 360, "STAGE 3: SUBTRACTION &amp; THRESHOLD COMPARISON (arith.subi &amp; arith.cmpi)", "#F8FAFC", "#CBD5E1", "#7C3AED")
         ]
-        for bx, by, bw, bh, blabel, bfill, bstroke in stage_boxes:
-            svg.append(f'<rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="8" fill="{bfill}" stroke="{bstroke}" stroke-width="1.5"/>')
-            svg.append(f'<text x="{bx+15}" y="{by+20}" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#475569">{blabel}</text>')
+        
+        for bx, by, bw, bh, blabel, bfill, bstroke, baccent in stage_clusters:
+            svg.append(f'<rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="12" fill="{bfill}" stroke="{bstroke}" stroke-width="1.5"/>')
+            svg.append(f'<rect x="{bx}" y="{by}" width="6" height="{bh}" rx="3" fill="{baccent}"/>')
+            svg.append(f'<text x="{bx+20}" y="{by+28}" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" font-weight="700" fill="#334155" letter-spacing="0.5">{blabel}</text>')
 
-        # Draw Edges
-        edge_coords = [
-            ("x1", "not_x1", "%x1"), ("x2", "not_x2", "%x2"),
-            ("x1", "c1_pos", "%x1"), ("not_x2", "c1_pos", "%not_x2"),
-            ("not_x1", "c2_pos", "%not_x1"), ("x2", "c2_pos", "%x2"),
-            ("x1", "c1_neg", "%x1"), ("x2", "c1_neg", "%x2"),
-            ("not_x1", "c2_neg", "%not_x1"), ("not_x2", "c2_neg", "%not_x2"),
-            ("c1_pos", "pos_votes", "%c1_pos"), ("c2_pos", "pos_votes", "%c2_pos"),
-            ("c1_neg", "neg_votes", "%c1_neg"), ("c2_neg", "neg_votes", "%c2_neg"),
-            ("pos_votes", "diff", "%pos_votes"), ("neg_votes", "diff", "%neg_votes"),
-            ("diff", "decision", "%diff")
+        # ---------------------------------------------------------------------
+        # Directed Routing Paths (Multi-Level Bus to Prevent Any Arrow Overlap)
+        # ---------------------------------------------------------------------
+        edges = [
+            # Inverter horizontal connections in Stage 0 (y=205)
+            ("M 305 205 L 360 205", "arrow-teal", "#0D9488", 2.0, "%x1"),
+            ("M 915 205 L 970 205", "arrow-teal", "#0D9488", 2.0, "%x2"),
+
+            # Stage 0 -> Stage 1: Literals into Clauses
+            # 1. x1 -> C1_pos (Straight drop)
+            ("M 160 245 L 160 440", "arrow-blue", "#0284C7", 2.0, "%x1"),
+            
+            # 2. x1 -> C1_neg (High Bus Layer at y=295)
+            ("M 240 245 C 240 295, 770 295, 770 440", "arrow-blue", "#0284C7", 2.0, "%x1"),
+
+            # 3. not_x1 -> C2_pos (Direct drop)
+            ("M 430 245 C 430 310, 450 330, 450 440", "arrow-teal", "#0D9488", 2.0, "%not_x1"),
+
+            # 4. not_x1 -> C2_neg (Mid Bus Layer at y=325)
+            ("M 510 245 C 510 325, 1060 325, 1060 440", "arrow-teal", "#0D9488", 2.0, "%not_x1"),
+
+            # 5. x2 -> C2_pos (Leftward curve at y=345)
+            ("M 770 245 C 770 345, 530 345, 530 440", "arrow-blue", "#0284C7", 2.0, "%x2"),
+
+            # 6. x2 -> C1_neg (Direct drop)
+            ("M 850 245 C 850 310, 850 330, 850 440", "arrow-blue", "#0284C7", 2.0, "%x2"),
+
+            # 7. not_x2 -> C1_pos (Low Bus Layer at y=365)
+            ("M 1040 245 C 1040 365, 240 365, 240 440", "arrow-teal", "#0D9488", 2.0, "%not_x2"),
+
+            # 8. not_x2 -> C2_neg (Direct drop)
+            ("M 1120 245 C 1120 310, 1140 330, 1140 440", "arrow-teal", "#0D9488", 2.0, "%not_x2"),
+
+            # Stage 1 -> Stage 2: Clauses into Vote Adders (Enter at y=650, WELL BELOW Stage 2 Header at y=628)
+            # Positive Accumulator Tree (Left Half)
+            ("M 200 540 C 200 595, 270 610, 270 650", "arrow-green", "#16A34A", 2.4, "%c1_pos"),
+            ("M 490 540 C 490 595, 420 610, 420 650", "arrow-green", "#16A34A", 2.4, "%c2_pos"),
+
+            # Negative Accumulator Tree (Right Half)
+            ("M 810 540 C 810 595, 880 610, 880 650", "arrow-rose", "#E11D48", 2.4, "%c1_neg"),
+            ("M 1100 540 C 1100 595, 1030 610, 1030 650", "arrow-rose", "#E11D48", 2.4, "%c2_neg"),
+
+            # Stage 2 -> Stage 3: Adders into Subtractor (Enter at y=867, WELL BELOW Stage 3 Header at y=838)
+            ("M 345 750 C 345 810, 540 825, 540 867", "arrow-amber", "#D97706", 2.4, "%pos_votes"),
+            ("M 955 750 C 955 810, 760 825, 760 867", "arrow-amber", "#D97706", 2.4, "%neg_votes"),
+
+            # Subtractor to Comparator (Straight Vertical: y=962 to y=997)
+            ("M 650 962 L 650 997", "arrow-purple", "#7C3AED", 2.6, "%diff"),
+            
+            # Comparator to Return Port (y=1092 to y=1130)
+            ("M 650 1092 L 650 1130", "arrow-purple", "#7C3AED", 2.6, "%decision")
         ]
-        for src, dst, elabel in edge_coords:
-            if src in pos and dst in pos:
-                sx, sy = pos[src]
-                dx, dy = pos[dst]
-                svg.append(f'<path d="M {sx} {sy+25} C {sx} {sy+50}, {dx} {dy-50}, {dx} {dy-25}" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>')
 
-        # Draw Nodes
-        node_styles = {
-            "x1": ("Input x1", "Primary Input i1", "#E0F2FE", "#0284C7", 130, 50),
-            "x2": ("Input x2", "Primary Input i1", "#E0F2FE", "#0284C7", 130, 50),
-            "not_x1": ("NOT x1", "arith.xori %x1, 1", "#CCFBF1", "#0D9488", 130, 50),
-            "not_x2": ("NOT x2", "arith.xori %x2, 1", "#CCFBF1", "#0D9488", 130, 50),
-            "c1_pos": ("Clause C1_pos (+)", "x1 & ~x2", "#DCFCE7", "#16A34A", 140, 60),
-            "c2_pos": ("Clause C2_pos (+)", "~x1 & x2", "#DCFCE7", "#16A34A", 140, 60),
-            "c1_neg": ("Clause C1_neg (-)", "x1 & x2", "#FFE4E6", "#E11D48", 140, 60),
-            "c2_neg": ("Clause C2_neg (-)", "~x1 & ~x2", "#FFE4E6", "#E11D48", 140, 60),
-            "pos_votes": ("+ Vote Adder", "arith.addi : i32", "#FEF08A", "#CA8A04", 170, 55),
-            "neg_votes": ("- Vote Adder", "arith.addi : i32", "#FEF08A", "#CA8A04", 170, 55),
-            "diff": ("Vote Subtractor", "arith.subi : i32", "#F3E8FF", "#9333EA", 180, 55),
-            "decision": ("Threshold Comparator", "arith.cmpi sge, %diff, 0", "#EDE9FE", "#6D28D9", 200, 55)
-        }
+        for d_path, mark, scolor, swidth, elabel in edges:
+            svg.append(f'<path d="{d_path}" fill="none" stroke="{scolor}" stroke-width="{swidth}" marker-end="url(#{mark})"/>')
 
-        for nid, (title, sub, nfill, nstroke, nw, nh) in node_styles.items():
-            cx, cy = pos[nid]
-            nx = cx - nw/2
-            ny = cy - nh/2
-            svg.append(f'<g filter="url(#shadow)">')
-            svg.append(f'  <rect x="{nx}" y="{ny}" width="{nw}" height="{nh}" rx="8" fill="{nfill}" stroke="{nstroke}" stroke-width="2"/>')
-            svg.append(f'  <text x="{cx}" y="{cy-5}" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0F172A" text-anchor="middle">{title}</text>')
-            svg.append(f'  <text x="{cx}" y="{cy+14}" font-family="Arial, sans-serif" font-size="10" fill="#475569" text-anchor="middle">{sub}</text>')
+        # ---------------------------------------------------------------------
+        # Node Cards with Precise, Non-Overlapping Internal Geometry
+        # ---------------------------------------------------------------------
+        cards = [
+            # Stage 0 (cy=205, h=80 -> ry=165 to 245, Header at y=138. Clearance = 27px)
+            ("x1", 200, 205, 210, 80, "Primary Input: x1", "Argument %x1 : i1", "input.arg", "#EFF6FF", "#3B82F6", "#DBEAFE", "#1E40AF"),
+            ("not_x1", 470, 205, 210, 80, "Inverter: NOT x1", "arith.xori %x1, 1", "%not_x1 : i1", "#F0FDFA", "#14B8A6", "#CCFBF1", "#115E59"),
+            ("x2", 810, 205, 210, 80, "Primary Input: x2", "Argument %x2 : i1", "input.arg", "#EFF6FF", "#3B82F6", "#DBEAFE", "#1E40AF"),
+            ("not_x2", 1080, 205, 210, 80, "Inverter: NOT x2", "arith.xori %x2, 1", "%not_x2 : i1", "#F0FDFA", "#14B8A6", "#CCFBF1", "#115E59"),
+
+            # Stage 1 (cy=490, h=100 -> ry=440 to 540, Header at y=418. Clearance = 22px)
+            ("c1_pos", 200, 490, 240, 100, "Clause C1+ (Pos Vote +1)", "Formula: x1 &amp; ~x2", "arith.andi %x1, %not_x2 : i1", "#F0FDF4", "#22C55E", "#DCFCE7", "#166534"),
+            ("c2_pos", 490, 490, 240, 100, "Clause C2+ (Pos Vote +1)", "Formula: ~x1 &amp; x2", "arith.andi %not_x1, %x2 : i1", "#F0FDF4", "#22C55E", "#DCFCE7", "#166534"),
+            ("c1_neg", 810, 490, 240, 100, "Clause C1- (Neg Vote -1)", "Formula: x1 &amp; x2", "arith.andi %x1, %x2 : i1", "#FFF1F2", "#F43F5E", "#FFE4E6", "#9F1239"),
+            ("c2_neg", 1100, 490, 240, 100, "Clause C2- (Neg Vote -1)", "Formula: ~x1 &amp; ~x2", "arith.andi %not_x1, %not_x2 : i1", "#FFF1F2", "#F43F5E", "#FFE4E6", "#9F1239"),
+
+            # Stage 2 (cy=700, h=100 -> ry=650 to 750, Header at y=628. Clearance = 22px)
+            ("pos_votes", 345, 700, 370, 100, "Positive Vote Accumulator (+Votes)", "arith.addi %c1_pos_ext, %c2_pos_ext", "%pos_votes : i32 (Zero-Extended)", "#FFFBEB", "#F59E0B", "#FEF3C7", "#92400E"),
+            ("neg_votes", 955, 700, 370, 100, "Negative Vote Accumulator (-Votes)", "arith.addi %c1_neg_ext, %c2_neg_ext", "%neg_votes : i32 (Zero-Extended)", "#FFFBEB", "#F59E0B", "#FEF3C7", "#92400E"),
+
+            # Stage 3 (Subtractor: cy=915, h=95 -> ry=867.5 to 962.5, Header at y=838. Clearance = 29.5px)
+            ("diff", 650, 915, 390, 95, "Vote Difference Subtractor", "arith.subi %pos_votes, %neg_votes", "%diff = (+Votes) - (-Votes) : i32", "#FAF5FF", "#A855F7", "#F3E8FF", "#6B21A8"),
+            
+            # Stage 3 (Comparator: cy=1045, h=95 -> ry=997.5 to 1092.5)
+            ("decision", 650, 1045, 390, 95, "Threshold Decision Comparator", "arith.cmpi sge, %diff, 0", "Output: (%diff &gt;= 0) ? 1 : 0 (i1)", "#F5F3FF", "#8B5CF6", "#EDE9FE", "#5B21B6")
+        ]
+
+        for cid, cx, cy, cw, ch, title, formula, dialect_tag, cfill, cstroke, tag_fill, tag_text in cards:
+            rx_pos = cx - cw/2
+            ry_pos = cy - ch/2
+            
+            svg.append(f'<g filter="url(#card-shadow)">')
+            svg.append(f'  <rect x="{rx_pos}" y="{ry_pos}" width="{cw}" height="{ch}" rx="10" fill="{cfill}" stroke="{cstroke}" stroke-width="2"/>')
+            
+            # Title (Clean top positioning)
+            svg.append(f'  <text x="{cx}" y="{ry_pos+24}" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle">{title}</text>')
+            
+            # Formula / Subtitle (Middle positioning)
+            svg.append(f'  <text x="{cx}" y="{ry_pos+46}" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" font-weight="500" fill="#475569" text-anchor="middle">{formula}</text>')
+            
+            # MLIR Dialect Code Pill Badge (Bottom positioning with zero collision)
+            badge_w = cw - 28
+            badge_h = 22
+            badge_x = cx - badge_w/2
+            badge_y = ry_pos + ch - 30
+            svg.append(f'  <rect x="{badge_x}" y="{badge_y}" width="{badge_w}" height="{badge_h}" rx="5" fill="{tag_fill}"/>')
+            svg.append(f'  <text x="{cx}" y="{badge_y+15}" font-family="Consolas, Monaco, monospace" font-size="10" font-weight="600" fill="{tag_text}" text-anchor="middle">{dialect_tag}</text>')
             svg.append(f'</g>')
 
+        # Footer Legend
+        svg.append('<rect x="35" y="1195" width="1290" height="95" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>')
+        svg.append('<text x="55" y="1222" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" font-weight="700" fill="#475569">GRAPH LEGEND &amp; BUS LAYERS:</text>')
+        
+        legend_items = [
+            (210, 1222, "#3B82F6", "Primary Inputs (i1)"),
+            (380, 1222, "#14B8A6", "Inverters (xori)"),
+            (550, 1222, "#22C55E", "Pos Clauses (+1)"),
+            (720, 1222, "#F43F5E", "Neg Clauses (-1)"),
+            (890, 1222, "#F59E0B", "Vote Adders (addi)"),
+            (1070, 1222, "#8B5CF6", "Comparator (cmpi)")
+        ]
+        for lx, ly, lcol, ltext in legend_items:
+            svg.append(f'<circle cx="{lx}" cy="{ly-4}" r="6" fill="{lcol}"/>')
+            svg.append(f'<text x="{lx+12}" y="{ly}" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">{ltext}</text>')
+            
+        svg.append('<text x="680" y="1255" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Dataflow: Top-to-Bottom SSA evaluation. Multi-level horizontal buses (y=295, y=325, y=365) and generous stage padding guarantee zero overlap.</text>')
+
         svg.append('</svg>')
-        with open(svg_path, "w") as f:
+        with open(svg_path, "w", encoding="utf-8") as f:
             f.write("\n".join(svg))
         print(f"[3_visualize_ir_graph] Standalone vector SVG generated: {svg_path}")
 
