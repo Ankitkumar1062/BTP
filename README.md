@@ -4,7 +4,7 @@ This directory contains the complete implementation, compiler, visualizer, forma
 
 ---
 
-## ⚡ Quick Start (One-Click Execution)
+##  Quick Start (One-Click Execution)
 
 To run the complete 6-stage pipeline and generate all artifacts:
 
@@ -14,7 +14,7 @@ python run_full_pipeline.py
 
 ---
 
-## 📂 Codebase Structure
+##  Codebase Structure
 
 - `1_simple_tm.py`: Canonical Tsetlin Machine model & rule generator (XOR / MUX).
 - `2_tm_to_mlir.py`: MLIR code generator (emits standard `func`/`arith` SSA IR + high-level `tm` dialect).
