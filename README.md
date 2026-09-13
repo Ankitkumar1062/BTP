@@ -6,7 +6,7 @@
 [![Compiler: MLIR](https://img.shields.io/badge/IR-LLVM%20MLIR%20SSA-blue.svg)](#stage-2-mlir-compiler)
 [![Formal Tool: Workcraft](https://img.shields.io/badge/Tool-Workcraft%203.5.5-orange.svg)](#-workcraft-integration-guide)
 [![HDL: Verilog](https://img.shields.io/badge/RTL-IEEE%201364--2005-purple.svg)](#stage-8-synthesizable-verilog-rtl-generation)
-[![License](https://img.shields.io/badge/License-Academic%20Research-lightgrey.svg)](#-academic-literature--reference-papers)
+[![Reference Paper](https://img.shields.io/badge/Paper-IEEE%20TC%202010-red.svg)](#-academic-literature--reference-papers)
 
 ---
 
@@ -19,7 +19,7 @@ In conventional spatial (fully unrolled) implementations of the **Tsetlin Machin
 ### 💡 The Proposed Solution (MLIR Compiler + CPOG Graph Overlay)
 1. **Compile Rule-Based Logic to MLIR**: Lowers high-level TM clauses into standard Static Single Assignment (SSA) `func` and `arith` dialect operations.
 2. **Extract SSA Dataflow DAG**: Maps operand def-use chains into a computational directed acyclic graph.
-3. **Synthesize a Conditional Partial Order Graph (CPOG)**: Uses formal CPOG theory ($H = (V, E, \phi, \rho, S)$) to overlay all $M$ clause subgraphs onto **$K \ll M$ shared, reconfigurable hardware execution cores** controlled by minimal Boolean switching logic.
+3. **Synthesize a Conditional Partial Order Graph (CPOG)**: Uses formal CPOG theory ($H = (V, E, \phi, \rho, S)$) from Mokhov & Yakovlev (IEEE TC 2010) to overlay all $M$ clause subgraphs onto **$K \ll M$ shared, reconfigurable hardware execution cores** controlled by minimal Boolean switching logic.
 4. **Formal Verification & RTL Generation**: Mathematically proves structural isomorphism ($H|_S \cong G_{\text{IR}}$) and 100% truth-table behavioral equivalence, then generates cycle-accurate synthesizable Verilog HDL and native Workcraft `.work` models.
 
 ---
@@ -39,7 +39,7 @@ Double-click `run_pipeline.bat` or run:
 run_pipeline.bat
 ```
 
-Execution takes **under 3 seconds** and produces all 13 verified artifacts in the `generated/` directory.
+Execution takes **under 3 seconds** and produces all verified artifacts in the `generated/` directory.
 
 ---
 
@@ -57,8 +57,6 @@ The pipeline consists of 8 automated stages:
 | **Stage 6** | [`6_hardware_reuse_report.py`](./6_hardware_reuse_report.py) | Quantitative hardware reuse analysis (gate count, adder cells, interconnect wires) and scalability projection up to 480 clauses. | `generated/hardware_reuse_report.md`, `generated/hardware_reuse_metrics.json` |
 | **Stage 7** | [`7_export_workcraft.py`](./7_export_workcraft.py)<br>[`generate_tm_work.py`](./generate_tm_work.py)<br>[`build_tm_workcraft_work.py`](./build_tm_workcraft_work.py) | Exports native Workcraft CPOG formats (`.g`), SCENCO SAT encoding graphs (`.dot`), and valid binary projects (`.work`) verified via Workcraft engine. | `generated/workcraft_cpog.g`, `generated/workcraft_scenarios.dot`, `generated/workcraft_encoding_spec.json`, `generated/workcraft_cpog.work`, `generated/tsetlin_machine_cpog.work` |
 | **Stage 8** | [`8_generate_verilog_rtl.py`](./8_generate_verilog_rtl.py) | Generates IEEE 1364-2005 synthesizable Verilog RTL and a cycle-accurate self-checking testbench. | `generated/tsetlin_machine_cpog.v`, `generated/tb_tsetlin_machine_cpog.v` |
-| **Auxiliary** | [`tsetlin_machine.c`](./tsetlin_machine.c) | Imperative C implementation of TM inference suitable for compilation with Polygeist (`cgeist`). | `tsetlin_machine.c` |
-| **Document** | [`PROJECT_CONTEXT_AND_PROGRESS.md`](./PROJECT_CONTEXT_AND_PROGRESS.md) | Comprehensive master research notes, theoretical foundations, and meeting context. | Documentation |
 
 ---
 
@@ -209,20 +207,12 @@ ALL TESTS PASSED WITH 100% ACCURACY.
 
 ## 📚 Academic Literature & Reference Papers
 
-All foundational papers studied and synthesized for this research are indexed in [`references_and_papers/`](./references_and_papers/):
+The foundational literature studied and synthesized for this CPOG research is archived in [`references_and_papers/`](./references_and_papers/):
 
 | Paper / Resource | File in Repository | Authors / Venue | Key Relevance |
 | :--- | :--- | :--- | :--- |
-| **Seminal CPOG Theory** | [`Mokhov_2010_IEEE_TC_CPOG.pdf`](./references_and_papers/Mokhov_2010_IEEE_TC_CPOG.pdf)<br>[`Mokhov_2010_IEEE_TC_CPOG_Published.pdf`](./references_and_papers/Mokhov_2010_IEEE_TC_CPOG_Published.pdf) | Andrey Mokhov, Alex Yakovlev<br>*IEEE Transactions on Computers (2010)* | Seminal paper establishing CPOG mathematical theory $H = (V, E, \phi, \rho, S)$, graph composition, scenario projection, Boolean condition minimization, and microarchitectural datapath overlay. |
-| **MATADOR: Automated TM SoC Design via MLIR** | [`MATADOR_2024_DATE_Shafik.pdf`](./references_and_papers/MATADOR_2024_DATE_Shafik.pdf) | Rishad Shafik, Alex Yakovlev, Gang Mao, Sidharth Maheshwari, Tousif Rahman<br>*IEEE / ACM DATE 2024* | Establishes the modern MLIR and CIRCT compiler flow for automated generation of reconfigurable Tsetlin Machine SoCs ($13.4\times$ speedup, $7\times$ resource efficiency). |
-| **Compressed Recurrent Feedback in TMs** | [`2026_ISTM_Kumar.pdf`](./references_and_papers/2026_ISTM_Kumar.pdf) | Ankit Kumar, Utkarsh Raj, Rishad Shafik, Sudip Roy<br>*IEEE ISTM 2026* | Investigates compressed recurrent feedback interfaces and Boolean-FSM dynamics for Tsetlin Machine architectures. |
-| **Reduced RISC-V TM Inference Processor** | [`Gupta_2026_Reduced_RISCV_TM_Inference.pdf`](./references_and_papers/Gupta_2026_Reduced_RISCV_TM_Inference.pdf) | Chanda Gupta, Sanidhya Bhatia, Shaurya Priyadarshi, Himani Panwar, Rishad Shafik, Sudip Roy (2026) | Profiles low-energy RISC-V instruction subset architectures for TM inference workloads. |
-| **Algebra of Parameterised Graphs** | [`Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf`](./references_and_papers/Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf) | Andrey Mokhov<br>*Newcastle University (2015)* | Theoretical foundations for parameterized and conditional graphs in hardware design. |
-| **Low-Latency Asynchronous TM Design** | [`Wheeldon_2020_Low_Latency_Asynchronous_TM.pdf`](./references_and_papers/Wheeldon_2020_Low_Latency_Asynchronous_TM.pdf) | Adrian Wheeldon, Rishad Shafik, Alex Yakovlev, Jonathan Hare, Ole-Christoffer Granmo<br>*DATE / arXiv (2020)* | Event-driven and asynchronous logic structures for low-latency TM inference at the edge. |
-| **Self-timed Reinforcement Learning TM** | [`Wheeldon_2020_Self_Timed_RL_TM.pdf`](./references_and_papers/Wheeldon_2020_Self_Timed_RL_TM.pdf) | Adrian Wheeldon, Alex Yakovlev, Rishad Shafik (2020) | Graph-modeled asynchronous execution and self-timed reinforcement learning in Tsetlin Automata. |
-| **Original Tsetlin Machine** | *arXiv:1804.01508* | Ole-Christoffer Granmo (2018) | Founding paper introducing the Tsetlin Machine propositional logic learning algorithm. |
-
-*Detailed annotations and reading notes can be found in [`references_and_papers/LITERATURE_AND_RESOURCES_INDEX.md`](./references_and_papers/LITERATURE_AND_RESOURCES_INDEX.md).*
+| **Seminal CPOG Theory** | [`Mokhov_2010_IEEE_TC_CPOG.pdf`](./references_and_papers/Mokhov_2010_IEEE_TC_CPOG.pdf)<br>[`Mokhov_2010_IEEE_TC_CPOG_Published.pdf`](./references_and_papers/Mokhov_2010_IEEE_TC_CPOG_Published.pdf) | Andrey Mokhov, Alex Yakovlev<br>*IEEE Transactions on Computers, Vol. 59, No. 5 (2010)* | Seminal paper establishing CPOG mathematical theory $H = (V, E, \phi, \rho, S)$, graph composition, scenario projection, Boolean condition minimization, and microarchitectural datapath overlay. |
+| **Foundational Tsetlin Machine** | *arXiv:1804.01508* | Ole-Christoffer Granmo (2018) | Founding paper introducing the Tsetlin Machine propositional logic learning algorithm. |
 
 ---
 
@@ -242,19 +232,10 @@ All foundational papers studied and synthesized for this research are indexed in
 ├── generate_tm_work.py                # Compliant Workcraft .work XML generator
 ├── run_full_pipeline.py                # Master 8-stage pipeline orchestrator
 ├── run_pipeline.bat                   # 1-click Windows execution batch script
-├── tsetlin_machine.c                  # Imperative C baseline for Polygeist / cgeist
-├── PROJECT_CONTEXT_AND_PROGRESS.md     # Master research documentation & meeting notes
 ├── README.md                           # Project documentation (this file)
-├── references_and_papers/              # Academic papers and literature index
-│   ├── LITERATURE_AND_RESOURCES_INDEX.md
+├── references_and_papers/              # Academic papers
 │   ├── Mokhov_2010_IEEE_TC_CPOG.pdf
-│   ├── Mokhov_2010_IEEE_TC_CPOG_Published.pdf
-│   ├── MATADOR_2024_DATE_Shafik.pdf
-│   ├── 2026_ISTM_Kumar.pdf
-│   ├── Gupta_2026_Reduced_RISCV_TM_Inference.pdf
-│   ├── Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf
-│   ├── Wheeldon_2020_Low_Latency_Asynchronous_TM.pdf
-│   └── Wheeldon_2020_Self_Timed_RL_TM.pdf
+│   └── Mokhov_2010_IEEE_TC_CPOG_Published.pdf
 └── generated/                          # Generated outputs and artifacts
     ├── tm_model.json                  # Canonical TM rule specifications
     ├── model.mlir                     # Lowered standard MLIR (func, arith)
@@ -290,17 +271,10 @@ If you use or reference this codebase in your research, please cite the correspo
   pages={700-719}
 }
 
-@inproceedings{shafik2024matador,
-  author={Shafik, Rishad and Yakovlev, Alex and Mao, Gang and Maheshwari, Sidharth and Rahman, Tousif},
-  title={{MATADOR}: Automated System-on-Chip Tsetlin Machine Design Generation for Edge Applications},
-  booktitle={Design, Automation \& Test in Europe Conference (DATE)},
-  year={2024}
-}
-
-@inproceedings{kumar2026istm,
-  author={Kumar, Ankit and Raj, Utkarsh and Shafik, Rishad and Roy, Sudip},
-  title={Compressed Recurrent Feedback in Tsetlin Machines: A Reproducible Boolean-FSM Study},
-  booktitle={IEEE International Symposium on the Tsetlin Machine (ISTM)},
-  year={2026}
+@article{granmo2018tsetlin,
+  author={Granmo, Ole-Christoffer},
+  title={The Tsetlin Machine - A Game Theoretic, Propositional Logic Approach to Machine Learning},
+  journal={arXiv preprint arXiv:1804.01508},
+  year={2018}
 }
 ```
