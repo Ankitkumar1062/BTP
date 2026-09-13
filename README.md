@@ -54,7 +54,7 @@ The pipeline consists of 8 automated stages:
 | **Stage 3** | [`3_visualize_ir_graph.py`](./3_visualize_ir_graph.py) | Parses MLIR SSA def-use chains and renders vector Dataflow DAGs in Graphviz DOT and SVG formats. | `generated/ir_graph.dot`, `generated/ir_graph.svg`, `generated/ir_graph_data.json` |
 | **Stage 4** | [`4_cpog_synthesis.py`](./4_cpog_synthesis.py) | Synthesizes CPOG $H = (V, E, \phi, \rho, S)$, derives minimal Boolean conditions ($\bar{s}_0$, $s_1 \oplus s_0$), and exports scenario projections. | `generated/cpog_graph.dot`, `generated/cpog_graph.svg`, `generated/cpog_model.json`, `generated/projections/` |
 | **Stage 5** | [`5_verify_cpog_mlir.py`](./5_verify_cpog_mlir.py) | Formal verification suite proving structural isomorphism ($H|_S \cong G_{\text{IR}}$) and 100% truth-table equivalence across Python TM, MLIR SSA, and CPOG hardware. | `generated/verification_report.json` |
-| **Stage 6** | [`6_hardware_reuse_report.py`](./6_hardware_reuse_report.py) | Quantitative hardware reuse analysis (gate count, adder cells, interconnect wires) and scalability projection up to 480 clauses. | `generated/hardware_reuse_report.md`, `generated/hardware_reuse_metrics.json` |
+| **Stage 6** | [`6_hardware_reuse_report.py`](./6_hardware_reuse_report.py) | Quantitative hardware reuse analysis (gate count, adder cells, interconnect wires). | `generated/hardware_reuse_report.md`, `generated/hardware_reuse_metrics.json` |
 | **Stage 7** | [`7_export_workcraft.py`](./7_export_workcraft.py)<br>[`generate_tm_work.py`](./generate_tm_work.py)<br>[`build_tm_workcraft_work.py`](./build_tm_workcraft_work.py) | Exports native Workcraft CPOG formats (`.g`), SCENCO SAT encoding graphs (`.dot`), and valid binary projects (`.work`) verified via Workcraft engine. | `generated/workcraft_cpog.g`, `generated/workcraft_scenarios.dot`, `generated/workcraft_encoding_spec.json`, `generated/workcraft_cpog.work`, `generated/tsetlin_machine_cpog.work` |
 | **Stage 8** | [`8_generate_verilog_rtl.py`](./8_generate_verilog_rtl.py) | Generates IEEE 1364-2005 synthesizable Verilog RTL and a cycle-accurate self-checking testbench. | `generated/tsetlin_machine_cpog.v`, `generated/tb_tsetlin_machine_cpog.v` |
 
@@ -155,15 +155,6 @@ The verification suite ([`5_verify_cpog_mlir.py`](./5_verify_cpog_mlir.py)) prov
 | **Literal Routing Wires** | 8 global wires | **4 local wires** | **50.0% Wiring Reduction** |
 | **Hardware Reuse Factor** | $1.0\times$ (No reuse) | **$4.0\times$** | **4 clauses evaluated on 1 shared core** |
 | **Control Logic Overhead** | Complex state machine | **Single XOR2 gate ($s_1 \oplus s_0$)** | **Negligible 1-gate Boolean overhead** |
-
-### 3. Scalability Analysis to Large-Scale TMs (up to 480 clauses)
-| Clauses ($M$) | Inputs ($N$) | CPOG Cores ($K$) | Spatial Area (GE) | CPOG Area (GE) | Gate Reduction | Area Reduction | Wire Reduction |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **4** | 2 | 1 | 230.5 GE | **102.8 GE** | **75.0%** | **55.4%** | **50.0%** |
-| **16** | 8 | 2 | 922.0 GE | **208.5 GE** | **87.5%** | **77.4%** | **75.0%** |
-| **64** | 16 | 4 | 3,676.0 GE | **417.0 GE** | **93.8%** | **88.7%** | **87.5%** |
-| **240** | 32 | 8 | 13,764.0 GE | **834.0 GE** | **96.7%** | **93.9%** | **93.3%** |
-| **480** | 64 | 16 | 27,528.0 GE | **1,668.0 GE** | **96.7%** | **93.9%** | **96.7%** |
 
 ---
 
