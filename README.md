@@ -117,8 +117,8 @@ A Conditional Partial Order Graph is defined as a 5-tuple $H = (V, E, \phi, \rho
   - Signed accumulator (`acc_core`)
   - Threshold comparator (`decision_cmp`)
 - **Vertex Activation Conditions ($\phi$)**:
-  - $\phi(\text{and\_core}) = 1$ (100% duty cycle across all scenarios)
-  - $\phi(\text{acc\_core}) = 1$
+  - $\phi(v_{\text{AND}}) = 1$ (`and_core`: 100% duty cycle across all scenarios)
+  - $\phi(v_{\text{ACC}}) = 1$ (`acc_core`: 100% duty cycle)
 - **Edge Routing Conditions ($\rho$)**:
   - $\rho(x_1 \to \text{Port}_1) = \bar{s}_0$
   - $\rho(\bar{x}_1 \to \text{Port}_1) = s_0$
