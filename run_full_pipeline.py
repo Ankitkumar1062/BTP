@@ -112,9 +112,11 @@ def run_pipeline():
     print(f"  8. hardware_reuse_report.md    : Full Markdown report on Gate Area & Wire Savings")
     print(f"  9. workcraft_cpog.g            : Workcraft native CPOG model format")
     print(f" 10. workcraft_scenarios.dot     : Scenario-encoded graph for Workcraft SCENCO")
-    print(f" 11. tsetlin_machine_cpog.v      : Synthesizable Verilog RTL module")
-    print(f" 12. tb_tsetlin_machine_cpog.v   : Cycle-accurate Verilog self-checking testbench")
+    print(f" 11. workcraft_cpog.work         : Workcraft native binary model (.work)")
+    print(f" 12. tsetlin_machine_cpog.v      : Synthesizable Verilog RTL module")
+    print(f" 13. tb_tsetlin_machine_cpog.v   : Cycle-accurate Verilog self-checking testbench")
     print("="*80 + "\n")
+
 
 if __name__ == "__main__":
     run_pipeline()

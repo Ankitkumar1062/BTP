@@ -52,63 +52,63 @@
       "name": "Input Port x1",
       "type": "input",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E22A0>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04E2A0>"
     },
     {
       "id": "in_not_x1",
       "name": "Input Port ~x1",
       "type": "input",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2340>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04E340>"
     },
     {
       "id": "in_x2",
       "name": "Input Port x2",
       "type": "input",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2B60>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04EB60>"
     },
     {
       "id": "in_not_x2",
       "name": "Input Port ~x2",
       "type": "input",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2C00>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04EC00>"
     },
     {
       "id": "lit_mux1",
       "name": "Literal MUX 1",
       "type": "mux",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2CA0>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04ECA0>"
     },
     {
       "id": "lit_mux2",
       "name": "Literal MUX 2",
       "type": "mux",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2D40>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04ED40>"
     },
     {
       "id": "and_core",
       "name": "Shared 2-input AND Core",
       "type": "and_gate",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2DE0>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04EDE0>"
     },
     {
       "id": "acc_core",
       "name": "Reconfigurable Accumulator (+/-)",
       "type": "accumulator",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2E80>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04EE80>"
     },
     {
       "id": "decision_cmp",
       "name": "Threshold Comparator (>= 0)",
       "type": "comparator",
       "phi": "1",
-      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000029E5C6E2F20>"
+      "phi_eval": "<function CPOGSynthesizer._synthesize_cpog.<locals>.<lambda> at 0x0000027FEA04EF20>"
     }
   ],
   "edges": [

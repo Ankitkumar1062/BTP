@@ -14,15 +14,22 @@ This directory contains the foundational literature, academic papers, and techni
 
 ---
 
-### 2. Algebra of Parameterised Graphs / Conditional Partial Order Graphs (CPOG)
-- **File**: [`Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf`](./Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf)
-- **Author**: Andrey Mokhov (*Newcastle University*)
-- **Significance**: Comprehensive mathematical framework for CPOGs ($H = (V, E, \phi, \rho, S)$), graph overlays, and optimal condition synthesis for reconfigurable hardware microarchitectures.
-- **Related Seminal Work**: Mokhov & Yakovlev, *"Conditional Partial Order Graphs: Model, Synthesis, and Application"*, IEEE Transactions on Computers (2010).
+### 2. Conditional Partial Order Graphs: Model, Synthesis, and Applications (Seminal CPOG Theory)
+- **Files**: [`Mokhov_2010_IEEE_TC_CPOG.pdf`](./Mokhov_2010_IEEE_TC_CPOG.pdf) & [`Mokhov_2010_IEEE_TC_CPOG_Published.pdf`](./Mokhov_2010_IEEE_TC_CPOG_Published.pdf)
+- **Authors**: Andrey Mokhov, Alex Yakovlev (*Newcastle University*)
+- **Venue**: IEEE Transactions on Computers (Vol. 59, No. 5, May 2010)
+- **Significance**: Seminal paper establishing CPOG mathematical theory $H = (V, E, \phi, \rho, S)$, graph composition, scenario projection, Boolean condition minimization, and application to microarchitectural datapath and controller co-design.
 
 ---
 
-### 3. Low-Latency Asynchronous Logic Design for Inference at the Edge
+### 3. Algebra of Parameterised Graphs / Conditional Partial Order Graphs (CPOG)
+- **File**: [`Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf`](./Mokhov_2015_Algebra_of_Parameterized_Graphs.pdf)
+- **Author**: Andrey Mokhov (*Newcastle University*)
+- **Significance**: Comprehensive mathematical framework for CPOGs, graph overlays, and optimal condition synthesis for reconfigurable hardware microarchitectures.
+
+---
+
+### 4. Low-Latency Asynchronous Logic Design for Inference at the Edge
 - **File**: [`Wheeldon_2020_Low_Latency_Asynchronous_TM.pdf`](./Wheeldon_2020_Low_Latency_Asynchronous_TM.pdf)
 - **Authors**: Adrian Wheeldon, Rishad Shafik, Alex Yakovlev, Jonathan Hare, Ole-Christoffer Granmo
 - **Venue**: DATE / arXiv 2020
@@ -30,14 +37,14 @@ This directory contains the foundational literature, academic papers, and techni
 
 ---
 
-### 4. Self-timed Reinforcement Learning using Tsetlin Machine
+### 5. Self-timed Reinforcement Learning using Tsetlin Machine
 - **File**: [`Wheeldon_2020_Self_Timed_RL_TM.pdf`](./Wheeldon_2020_Self_Timed_RL_TM.pdf)
 - **Authors**: Adrian Wheeldon, Alex Yakovlev, Rishad Shafik
 - **Significance**: Investigates self-timed, speed-independent execution models and graph control for Tsetlin Automata.
 
 ---
 
-### 5. Compressed Recurrent Feedback in Tsetlin Machines: A Reproducible Boolean-FSM Study
+### 6. Compressed Recurrent Feedback in Tsetlin Machines: A Reproducible Boolean-FSM Study
 - **File**: [`2026_ISTM_Kumar.pdf`](./2026_ISTM_Kumar.pdf)
 - **Authors**: Ankit Kumar, Utkarsh Raj, Rishad Shafik, Sudip Roy
 - **Venue**: IEEE International Symposium on the Tsetlin Machine (ISTM 2026)
@@ -45,7 +52,7 @@ This directory contains the foundational literature, academic papers, and techni
 
 ---
 
-### 6. Low-Energy Reduced RISC-V Instruction Subset Processor for Tsetlin Machine Inference
+### 7. Low-Energy Reduced RISC-V Instruction Subset Processor for Tsetlin Machine Inference
 - **File**: [`Gupta_2026_Reduced_RISCV_TM_Inference.pdf`](./Gupta_2026_Reduced_RISCV_TM_Inference.pdf)
 - **Authors**: Chanda Gupta, Sanidhya Bhatia, Shaurya Priyadarshi, Himani Panwar, Rishad Shafik, Sudip Roy (June 2026)
 - **Significance**: Profiles TM instruction workloads (literal masking, bitwise operations, integer accumulation).

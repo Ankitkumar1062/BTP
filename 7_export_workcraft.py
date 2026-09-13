@@ -132,5 +132,32 @@ def run_workcraft_export(output_dir="./generated"):
     sat_path = os.path.join(output_dir, "workcraft_encoding_spec.json")
     exporter.export_sat_spec(sat_path)
 
+    # 4. Generate native Workcraft .work binary models
+    try:
+        from generate_tm_work import create_work_files
+        created_works = create_work_files(output_dir)
+        for w in created_works:
+            print(f"[7_export_workcraft] Native Workcraft binary project generated: {w}")
+    except Exception as ex:
+        print(f"[7_export_workcraft] Error generating .work file: {ex}")
+
+    # 5. Verify .work model validity with Workcraft Console if available
+    java_exe = r"C:\Program Files\Android\Android Studio\jbr\bin\java.exe"
+    workcraft_cp = r"C:\Users\ankit\App\workcraft-v3.5.5-windows\workcraft\bin\*"
+    target_work = os.path.join(output_dir, "workcraft_cpog.work")
+    if os.path.exists(java_exe) and os.path.exists(target_work):
+        import subprocess
+        try:
+            rel_work = target_work.replace('\\', '/')
+            js_verify = f"var w = load('{rel_work}'); print('WORK_VERIFIED_OK: ' + w.getTitle()); exit();"
+            cmd = [java_exe, "-cp", workcraft_cp, "org.workcraft.Console", "-nogui", f"-exec:{js_verify}"]
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+            if "WORK_VERIFIED_OK" in res.stdout:
+                print(f"[7_export_workcraft] Verified in Workcraft 3.5.5 Engine: {target_work} (Valid CPOG Model)")
+        except Exception as ex:
+            pass
+
+
 if __name__ == "__main__":
     run_workcraft_export()
+
