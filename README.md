@@ -14,13 +14,13 @@
 
 In conventional spatial (fully unrolled) implementations of the **Tsetlin Machine (TM)**, every learned clause is instantiated as an independent physical circuit in silicon:
 - For an $M$-clause model with $N$ inputs, standard hardware allocates $M$ parallel multi-input AND trees and a wide multi-operand adder tree.
-- In edge and ultra-low-power scenarios, this creates severe silicon area bloat ($O(M \cdot N)$ literal check gates), high static leakage, and routing interconnect congestion.
+- In edge and ultra-low-power scenarios, this creates severe silicon area bloat (with $O(M \cdot N)$ literal check gates), high static leakage, and routing interconnect congestion.
 
 ### 💡 The Proposed Solution (MLIR Compiler + CPOG Graph Overlay)
 1. **Compile Rule-Based Logic to MLIR**: Lowers high-level TM clauses into standard Static Single Assignment (SSA) `func` and `arith` dialect operations.
 2. **Extract SSA Dataflow DAG**: Maps operand def-use chains into a computational directed acyclic graph.
-3. **Synthesize a Conditional Partial Order Graph (CPOG)**: Uses formal CPOG theory ($H = (V, E, \phi, \rho, S)$) from Mokhov & Yakovlev (IEEE TC 2010) to overlay all $M$ clause subgraphs onto **$K \ll M$ shared, reconfigurable hardware execution cores** controlled by minimal Boolean switching logic.
-4. **Formal Verification & RTL Generation**: Mathematically proves structural isomorphism ($H|_S \cong G_{\text{IR}}$) and 100% truth-table behavioral equivalence, then generates cycle-accurate synthesizable Verilog HDL and native Workcraft `.work` models.
+3. **Synthesize a Conditional Partial Order Graph (CPOG)**: Uses formal CPOG theory, $H = (V, E, \phi, \rho, S)$, from Mokhov & Yakovlev (IEEE TC 2010) to overlay all $M$ clause subgraphs onto **$K \ll M$ shared, reconfigurable hardware execution cores** controlled by minimal Boolean switching logic.
+4. **Formal Verification & RTL Generation**: Mathematically proves structural isomorphism $H\vert_S \cong G_{\text{IR}}$ and 100% truth-table behavioral equivalence, then generates cycle-accurate synthesizable Verilog HDL and native Workcraft `.work` models.
 
 ---
 
@@ -53,7 +53,7 @@ The pipeline consists of 8 automated stages:
 | **Stage 2** | [`2_tm_to_mlir.py`](./2_tm_to_mlir.py) | Emits standard lowered MLIR (`arith`/`func` dialects) and domain-specific `tm` dialect; includes built-in SSA interpreter. | `generated/model.mlir`, `generated/model_high_level.mlir` |
 | **Stage 3** | [`3_visualize_ir_graph.py`](./3_visualize_ir_graph.py) | Parses MLIR SSA def-use chains and renders vector Dataflow DAGs in Graphviz DOT and SVG formats. | `generated/ir_graph.dot`, `generated/ir_graph.svg`, `generated/ir_graph_data.json` |
 | **Stage 4** | [`4_cpog_synthesis.py`](./4_cpog_synthesis.py) | Synthesizes CPOG $H = (V, E, \phi, \rho, S)$, derives minimal Boolean conditions ($\bar{s}_0$, $s_1 \oplus s_0$), and exports scenario projections. | `generated/cpog_graph.dot`, `generated/cpog_graph.svg`, `generated/cpog_model.json`, `generated/projections/` |
-| **Stage 5** | [`5_verify_cpog_mlir.py`](./5_verify_cpog_mlir.py) | Formal verification suite proving structural isomorphism ($H|_S \cong G_{\text{IR}}$) and 100% truth-table equivalence across Python TM, MLIR SSA, and CPOG hardware. | `generated/verification_report.json` |
+| **Stage 5** | [`5_verify_cpog_mlir.py`](./5_verify_cpog_mlir.py) | Formal verification suite proving structural isomorphism $H\vert_S \cong G_{\text{IR}}$ and 100% truth-table equivalence across Python TM, MLIR SSA, and CPOG hardware. | `generated/verification_report.json` |
 | **Stage 6** | [`6_hardware_reuse_report.py`](./6_hardware_reuse_report.py) | Quantitative hardware reuse analysis (gate count, adder cells, interconnect wires). | `generated/hardware_reuse_report.md`, `generated/hardware_reuse_metrics.json` |
 | **Stage 7** | [`7_export_workcraft.py`](./7_export_workcraft.py)<br>[`generate_tm_work.py`](./generate_tm_work.py)<br>[`build_tm_workcraft_work.py`](./build_tm_workcraft_work.py) | Exports native Workcraft CPOG formats (`.g`), SCENCO SAT encoding graphs (`.dot`), and valid binary projects (`.work`) verified via Workcraft engine. | `generated/workcraft_cpog.g`, `generated/workcraft_scenarios.dot`, `generated/workcraft_encoding_spec.json`, `generated/workcraft_cpog.work`, `generated/tsetlin_machine_cpog.work` |
 | **Stage 8** | [`8_generate_verilog_rtl.py`](./8_generate_verilog_rtl.py) | Generates IEEE 1364-2005 synthesizable Verilog RTL and a cycle-accurate self-checking testbench. | `generated/tsetlin_machine_cpog.v`, `generated/tb_tsetlin_machine_cpog.v` |
@@ -106,25 +106,25 @@ module {
 
 ### 3. CPOG Formal Specification (Mokhov & Yakovlev 2010)
 A Conditional Partial Order Graph is defined as a 5-tuple $H = (V, E, \phi, \rho, S)$:
-- **Operational Scenarios ($S$)**: Controlled by opcode variables $(s_1, s_0) \in \{0, 1\}^2$:
+- **Operational Scenarios $S$**: Controlled by opcode variables $(s_1, s_0) \in \{0, 1\}^2$:
   - $00 \implies C_1^+ \quad (x_1 \land \bar{x}_2)$
   - $01 \implies C_2^+ \quad (\bar{x}_1 \land x_2)$
   - $10 \implies C_1^- \quad (x_1 \land x_2)$
   - $11 \implies C_2^- \quad (\bar{x}_1 \land \bar{x}_2)$
-- **Vertex Set ($V$)**: Core execution hardware units:
+- **Vertex Set $V$**: Core execution hardware units:
   - Input literal selectors (`lit_mux1`, `lit_mux2`)
   - Shared AND evaluation core (`and_core`)
   - Signed accumulator (`acc_core`)
   - Threshold comparator (`decision_cmp`)
-- **Vertex Activation Conditions ($\phi$)**:
+- **Vertex Activation Conditions $\phi$**:
   - $\phi(v_{\text{AND}}) = 1$ (`and_core`: 100% duty cycle across all scenarios)
   - $\phi(v_{\text{ACC}}) = 1$ (`acc_core`: 100% duty cycle)
-- **Edge Routing Conditions ($\rho$)**:
+- **Edge Routing Conditions $\rho$**:
   - $\rho(x_1 \to \text{Port}_1) = \bar{s}_0$
   - $\rho(\bar{x}_1 \to \text{Port}_1) = s_0$
   - $\rho(x_2 \to \text{Port}_2) = s_1 \oplus s_0$
   - $\rho(\bar{x}_2 \to \text{Port}_2) = \overline{s_1 \oplus s_0}$
-  - Accumulation mode: Add ($+1$) when $s_1 = 0$, Subtract ($-1$) when $s_1 = 1$.
+  - Accumulation mode: Add (+1) when $s_1 = 0$, Subtract (-1) when $s_1 = 1$.
 
 ---
 
@@ -133,7 +133,7 @@ A Conditional Partial Order Graph is defined as a 5-tuple $H = (V, E, \phi, \rho
 ### 1. Formal Verification Certificate
 The verification suite ([`5_verify_cpog_mlir.py`](./5_verify_cpog_mlir.py)) provides two mathematical proofs:
 
-- **Proof 1: Structural Isomorphism ($H|_S \cong G_{\text{IR}}$)**:
+- **Proof 1: Structural Isomorphism: $H\vert_S \cong G_{\text{IR}}$**:
   - Scenario `00`: Active inputs `['x1', 'not_x2']` $\iff$ MLIR Clause `x1 & not_x2` $\to$ **PROVEN**
   - Scenario `01`: Active inputs `['not_x1', 'x2']` $\iff$ MLIR Clause `not_x1 & x2` $\to$ **PROVEN**
   - Scenario `10`: Active inputs `['x1', 'x2']` $\iff$ MLIR Clause `x1 & x2` $\to$ **PROVEN**
@@ -154,7 +154,7 @@ The verification suite ([`5_verify_cpog_mlir.py`](./5_verify_cpog_mlir.py)) prov
 | **Adder / Accumulator Cells** | 8 Full Adders | **4 Full Adders** | **50.0% Reduction (4 Adders saved)** |
 | **Literal Routing Wires** | 8 global wires | **4 local wires** | **50.0% Wiring Reduction** |
 | **Hardware Reuse Factor** | $1.0\times$ (No reuse) | **$4.0\times$** | **4 clauses evaluated on 1 shared core** |
-| **Control Logic Overhead** | Complex state machine | **Single XOR2 gate ($s_1 \oplus s_0$)** | **Negligible 1-gate Boolean overhead** |
+| **Control Logic Overhead** | Complex state machine | **Single XOR2 gate: $s_1 \oplus s_0$** | **Negligible 1-gate Boolean overhead** |
 
 ---
 
