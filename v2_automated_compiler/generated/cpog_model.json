@@ -1,0 +1,170 @@
+{
+  "benchmark_name": "xor",
+  "scenario_variables": [
+    "s0"
+  ],
+  "vertices": [
+    {
+      "id": "in_x1",
+      "name": "Port x1",
+      "type": "input",
+      "phi": "1"
+    },
+    {
+      "id": "in_not_x1",
+      "name": "Port not_x1",
+      "type": "input",
+      "phi": "1"
+    },
+    {
+      "id": "in_x2",
+      "name": "Port x2",
+      "type": "input",
+      "phi": "1"
+    },
+    {
+      "id": "in_not_x2",
+      "name": "Port not_x2",
+      "type": "input",
+      "phi": "1"
+    },
+    {
+      "id": "mux1_core0",
+      "name": "MUX1 C0",
+      "type": "mux",
+      "phi": "1"
+    },
+    {
+      "id": "mux2_core0",
+      "name": "MUX2 C0",
+      "type": "mux",
+      "phi": "1"
+    },
+    {
+      "id": "and_core0",
+      "name": "AND C0",
+      "type": "and_gate",
+      "phi": "1"
+    },
+    {
+      "id": "acc_core0",
+      "name": "ACC C0",
+      "type": "accumulator",
+      "phi": "1"
+    },
+    {
+      "id": "decision_cmp",
+      "name": "Threshold Comparator",
+      "type": "comparator",
+      "phi": "1"
+    }
+  ],
+  "edges": [
+    {
+      "from": "mux1_core0",
+      "to": "and_core0",
+      "rho_str": "1",
+      "rho_sop": "1"
+    },
+    {
+      "from": "mux2_core0",
+      "to": "and_core0",
+      "rho_str": "1",
+      "rho_sop": "1"
+    },
+    {
+      "from": "and_core0",
+      "to": "acc_core0",
+      "rho_str": "1",
+      "rho_sop": "1"
+    },
+    {
+      "from": "in_x1",
+      "to": "mux1_core0",
+      "rho_str": "~s0",
+      "rho_sop": "~s0"
+    },
+    {
+      "from": "in_not_x1",
+      "to": "mux1_core0",
+      "rho_str": "s0",
+      "rho_sop": "s0"
+    },
+    {
+      "from": "in_not_x2",
+      "to": "mux2_core0",
+      "rho_str": "~s0",
+      "rho_sop": "~s0"
+    },
+    {
+      "from": "in_x2",
+      "to": "mux2_core0",
+      "rho_str": "s0",
+      "rho_sop": "s0"
+    },
+    {
+      "from": "acc_core0",
+      "to": "decision_cmp",
+      "rho_str": "1",
+      "rho_sop": "1"
+    }
+  ],
+  "scenarios": [
+    {
+      "step": 0,
+      "code": [
+        0
+      ],
+      "code_str": "0",
+      "active_clauses": [
+        [
+          0,
+          {
+            "clause_id": 0,
+            "clause_name": "C1_pos",
+            "polarity": 1,
+            "include_mask": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "included_literals": [
+              "x1",
+              "not_x2"
+            ],
+            "formula": "x1 & not_x2"
+          }
+        ]
+      ]
+    },
+    {
+      "step": 1,
+      "code": [
+        1
+      ],
+      "code_str": "1",
+      "active_clauses": [
+        [
+          0,
+          {
+            "clause_id": 1,
+            "clause_name": "C2_pos",
+            "polarity": 1,
+            "include_mask": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "included_literals": [
+              "not_x1",
+              "x2"
+            ],
+            "formula": "not_x1 & x2"
+          }
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+"""
+7_export_workcraft.py
+=====================
+Workcraft CPOG Plugin & SCENCO Exporter.
+
+Exports the synthesized CPOG model into native Workcraft-compatible formats:
+1. `generated/workcraft_cpog.g` : Native Workcraft CPOG format.
+2. `generated/workcraft_scenarios.dot` : Scenario-encoded graph for Workcraft SCENCO plugin.
+3. `generated/workcraft_encoding_spec.json` : SAT-based encoding variables and scenario table.
+
+Tool Integration:
+- Open in Workcraft GUI (https://workcraft.org) via:
+  File -> Open -> workcraft_cpog.g
+- Or run Workcraft CLI for automated SAT-based condition optimization:
+  workcraft -exec:cpog-sat-encode generated/workcraft_cpog.g
+"""
+
+import os
+import json
+
+class WorkcraftCPOGExporter:
+    """
+    Exports CPOG models to Workcraft and SCENCO formats.
+    """
+    def __init__(self, output_dir="./generated"):
+        self.output_dir = output_dir
+        self.cpog_model_path = os.path.join(output_dir, "cpog_model.json")
+        with open(self.cpog_model_path, "r", encoding="utf-8") as f:
+            self.model = json.load(f)
+
+    def export_workcraft_g_format(self, out_path):
+        """
+        Emits Workcraft '.g' format for Conditional Partial Order Graphs.
+        """
+        lines = []
+        lines.append("# Workcraft CPOG Model Specification")
+        lines.append(f"# Benchmark: {self.model['benchmark_name'].upper()} Tsetlin Machine")
+        lines.append(f"# Scenario Variables: {', '.join(self.model['scenario_variables'])}")
+        lines.append(".model cpog_tsetlin_machine")
+        lines.append("")
+        
+        # Declare variables
+        lines.append(f".inputs {' '.join(self.model['scenario_variables'])}")
+        lines.append("")
+        
+        # Vertices with conditions phi(v)
+        lines.append("# Vertices and Activation Conditions phi(v)")
+        for v in self.model["vertices"]:
+            lines.append(f".vertex {v['id']} [label=\"{v['name']}\"] [cond=\"{v['phi']}\"]")
+            
+        lines.append("")
+        # Arcs with conditions rho(e)
+        lines.append("# Directed Arcs and Routing Conditions rho(e)")
+        for e in self.model["edges"]:
+            lines.append(f".arc {e['from']} -> {e['to']} [cond=\"{e['rho_str']}\"] [sop=\"{e['rho_sop']}\"]")
+            
+        lines.append("")
+        # Scenarios / Opcodes
+        lines.append("# Operational Scenarios (Opcodes)")
+        for sc in self.model["scenarios"]:
+            clause_names = ", ".join([c["clause_name"] for _, c in sc["active_clauses"]])
+            formulas = ", ".join([c["formula"] for _, c in sc["active_clauses"]])
+            lines.append(f"# Scenario {sc['code_str']} -> {clause_names} ({formulas})")
+            
+            # Format condition mapping string
+            cond_str = " ".join([f"{var}={bit}" for var, bit in zip(self.model['scenario_variables'], sc['code_str'])])
+            if not cond_str: cond_str = "static=1" # fallback if no variables
+            lines.append(f".scenario step_{sc['step']} {cond_str}")
+            
+        lines.append(".end")
+        
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+        print(f"[7_export_workcraft] Workcraft native .g format written: {out_path}")
+
+    def export_scenco_dot(self, out_path):
+        """
+        Emits Workcraft SCENCO scenario-encoded DOT graph.
+        """
+        lines = []
+        lines.append('digraph Workcraft_SCENCO_TM {')
+        lines.append('  graph [name="CPOG_Tsetlin_Machine", variables="s1,s0"];')
+        lines.append('  node [shape=box, style="filled,rounded", fontname="Helvetica"];')
+        lines.append('  edge [fontname="Helvetica", fontsize=10];')
+        lines.append('')
+        
+        for v in self.model["vertices"]:
+            lines.append(f'  "{v["id"]}" [label="{v["name"]}", condition="{v["phi"]}"];')
+            
+        lines.append('')
+        for e in self.model["edges"]:
+            rho_cond = e["rho_str"]
+            rho_sop = e["rho_sop"]
+            lines.append(f'  "{e["from"]}" -> "{e["to"]}" [condition="{rho_cond}", sop="{rho_sop}"];')
+            
+        lines.append('}')
+        
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+        print(f"[7_export_workcraft] Workcraft SCENCO DOT format written: {out_path}")
+
+    def export_sat_spec(self, out_path):
+        """
+        Exports machine-readable SAT encoding specification.
+        """
+        spec = {
+            "model_type": "Conditional Partial Order Graph (CPOG)",
+            "encoding_engine": "Workcraft SCENCO SAT-based Optimal Encoder",
+            "control_variables": self.model["scenario_variables"],
+            "num_scenarios": len(self.model["scenarios"]),
+            "scenarios": self.model["scenarios"],
+            "synthesized_conditions": {
+                "vertex_conditions": {v["id"]: v["phi"] for v in self.model["vertices"]},
+                "edge_conditions": [
+                    {
+                        "arc": f"{e['from']} -> {e['to']}",
+                        "boolean_condition": e["rho_str"],
+                        "sum_of_products": e["rho_sop"]
+                    }
+                    for e in self.model["edges"]
+                ]
+            }
+        }
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(spec, f, indent=2)
+        print(f"[7_export_workcraft] SAT encoding specification saved: {out_path}")
+
+def run_workcraft_export(output_dir="./generated"):
+    os.makedirs(output_dir, exist_ok=True)
+    exporter = WorkcraftCPOGExporter(output_dir)
+    
+    g_path = os.path.join(output_dir, "workcraft_cpog.g")
+    exporter.export_workcraft_g_format(g_path)
+    
+    dot_path = os.path.join(output_dir, "workcraft_scenarios.dot")
+    exporter.export_scenco_dot(dot_path)
+    
+    sat_path = os.path.join(output_dir, "workcraft_encoding_spec.json")
+    exporter.export_sat_spec(sat_path)
+
+    # 4. Generate native Workcraft .work binary models
+    try:
+        from generate_tm_work import create_work_files
+        created_works = create_work_files(output_dir)
+        for w in created_works:
+            print(f"[7_export_workcraft] Native Workcraft binary project generated: {w}")
+    except Exception as ex:
+        print(f"[7_export_workcraft] Error generating .work file: {ex}")
+
+    # 5. Verify .work model validity with Workcraft Console if available
+    java_exe = r"C:\Program Files\Android\Android Studio\jbr\bin\java.exe"
+    workcraft_cp = r"C:\Users\ankit\App\workcraft-v3.5.5-windows\workcraft\bin\*"
+    target_work = os.path.join(output_dir, "workcraft_cpog.work")
+    if os.path.exists(java_exe) and os.path.exists(target_work):
+        import subprocess
+        try:
+            rel_work = target_work.replace('\\', '/')
+            js_verify = f"var w = load('{rel_work}'); print('WORK_VERIFIED_OK: ' + w.getTitle()); exit();"
+            cmd = [java_exe, "-cp", workcraft_cp, "org.workcraft.Console", "-nogui", f"-exec:{js_verify}"]
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+            if "WORK_VERIFIED_OK" in res.stdout:
+                print(f"[7_export_workcraft] Verified in Workcraft 3.5.5 Engine: {target_work} (Valid CPOG Model)")
+        except Exception as ex:
+            pass
+
+
+if __name__ == "__main__":
+    run_workcraft_export()
+

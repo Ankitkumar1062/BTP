@@ -1,0 +1,88 @@
+# Workcraft CPOG Model Specification
+# Benchmark: IRIS Tsetlin Machine
+# Scenario Variables: s1, s0
+.model cpog_tsetlin_machine
+
+.inputs s1 s0
+
+# Vertices and Activation Conditions phi(v)
+.vertex in_sl_low [label="Port sl_low"] [cond="1"]
+.vertex in_not_sl_low [label="Port not_sl_low"] [cond="1"]
+.vertex in_sl_high [label="Port sl_high"] [cond="1"]
+.vertex in_not_sl_high [label="Port not_sl_high"] [cond="1"]
+.vertex in_sw_low [label="Port sw_low"] [cond="1"]
+.vertex in_not_sw_low [label="Port not_sw_low"] [cond="1"]
+.vertex in_sw_high [label="Port sw_high"] [cond="1"]
+.vertex in_not_sw_high [label="Port not_sw_high"] [cond="1"]
+.vertex in_pl_low [label="Port pl_low"] [cond="1"]
+.vertex in_not_pl_low [label="Port not_pl_low"] [cond="1"]
+.vertex in_pl_high [label="Port pl_high"] [cond="1"]
+.vertex in_not_pl_high [label="Port not_pl_high"] [cond="1"]
+.vertex in_pw_low [label="Port pw_low"] [cond="1"]
+.vertex in_not_pw_low [label="Port not_pw_low"] [cond="1"]
+.vertex in_pw_high [label="Port pw_high"] [cond="1"]
+.vertex in_not_pw_high [label="Port not_pw_high"] [cond="1"]
+.vertex mux1_core0 [label="MUX1 C0"] [cond="1"]
+.vertex mux2_core0 [label="MUX2 C0"] [cond="1"]
+.vertex and_core0 [label="AND C0"] [cond="1"]
+.vertex acc_core0 [label="ACC C0"] [cond="1"]
+.vertex mux1_core1 [label="MUX1 C1"] [cond="1"]
+.vertex mux2_core1 [label="MUX2 C1"] [cond="1"]
+.vertex and_core1 [label="AND C1"] [cond="1"]
+.vertex acc_core1 [label="ACC C1"] [cond="1"]
+.vertex mux1_core2 [label="MUX1 C2"] [cond="1"]
+.vertex mux2_core2 [label="MUX2 C2"] [cond="1"]
+.vertex and_core2 [label="AND C2"] [cond="1"]
+.vertex acc_core2 [label="ACC C2"] [cond="1"]
+.vertex mux1_core3 [label="MUX1 C3"] [cond="1"]
+.vertex mux2_core3 [label="MUX2 C3"] [cond="1"]
+.vertex and_core3 [label="AND C3"] [cond="1"]
+.vertex acc_core3 [label="ACC C3"] [cond="1"]
+.vertex decision_cmp [label="Threshold Comparator"] [cond="1"]
+
+# Directed Arcs and Routing Conditions rho(e)
+.arc mux1_core0 -> and_core0 [cond="1"] [sop="1"]
+.arc mux2_core0 -> and_core0 [cond="1"] [sop="1"]
+.arc and_core0 -> acc_core0 [cond="1"] [sop="1"]
+.arc mux1_core1 -> and_core1 [cond="1"] [sop="1"]
+.arc mux2_core1 -> and_core1 [cond="1"] [sop="1"]
+.arc and_core1 -> acc_core1 [cond="1"] [sop="1"]
+.arc mux1_core2 -> and_core2 [cond="1"] [sop="1"]
+.arc mux2_core2 -> and_core2 [cond="1"] [sop="1"]
+.arc and_core2 -> acc_core2 [cond="1"] [sop="1"]
+.arc mux1_core3 -> and_core3 [cond="1"] [sop="1"]
+.arc mux2_core3 -> and_core3 [cond="1"] [sop="1"]
+.arc and_core3 -> acc_core3 [cond="1"] [sop="1"]
+.arc in_sl_low -> mux1_core0 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_pl_high -> mux1_core0 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_not_sw_low -> mux1_core0 [cond="s1*~s0"] [sop="s1*~s0"]
+.arc in_sw_high -> mux2_core0 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_pw_low -> mux2_core0 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_not_pw_high -> mux2_core0 [cond="s1*~s0"] [sop="s1*~s0"]
+.arc in_pl_low -> mux1_core1 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_not_sl_low -> mux1_core1 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_not_pl_high -> mux1_core1 [cond="s1*~s0"] [sop="s1*~s0"]
+.arc in_pw_low -> mux2_core1 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_not_sw_high -> mux2_core1 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_not_pw_low -> mux2_core1 [cond="s1*~s0"] [sop="s1*~s0"]
+.arc in_sl_high -> mux1_core2 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_not_pl_low -> mux1_core2 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_pl_high -> mux2_core2 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_not_pw_low -> mux2_core2 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_sw_low -> mux1_core3 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_not_sl_high -> mux1_core3 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc in_pw_high -> mux2_core3 [cond="~s1*~s0"] [sop="~s1*~s0"]
+.arc in_not_pl_high -> mux2_core3 [cond="~s1*s0"] [sop="~s1*s0"]
+.arc acc_core0 -> decision_cmp [cond="1"] [sop="1"]
+.arc acc_core1 -> decision_cmp [cond="1"] [sop="1"]
+.arc acc_core2 -> decision_cmp [cond="1"] [sop="1"]
+.arc acc_core3 -> decision_cmp [cond="1"] [sop="1"]
+
+# Operational Scenarios (Opcodes)
+# Scenario 00 -> C1_pos, C2_pos, C1_pos, C2_pos (sl_low & sw_high, pl_low & pw_low, sl_high & pl_high, sw_low & pw_high)
+.scenario step_0 s1=0 s0=0
+# Scenario 01 -> C1_pos, C2_neg, C1_neg, C2_neg (pl_high & pw_low, not_sl_low & not_sw_high, not_pl_low & not_pw_low, not_sl_high & not_pl_high)
+.scenario step_1 s1=0 s0=1
+# Scenario 10 -> C1_neg, C2_neg (not_sw_low & not_pw_high, not_pl_high & not_pw_low)
+.scenario step_2 s1=1 s0=0
+.end
